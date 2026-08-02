@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<!--
+  Agenda de Tutorías de Proyectos de Egreso — vista de estudiantes
+  © 2026 Tamara Ricketts. DGETP.
+  Licencia Creative Commons Atribución-NoComercial-CompartirIgual 4.0 Internacional
+  (CC BY-NC-SA 4.0) — https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es
+  Cita sugerida: Ricketts, T. (2026). Agenda de Tutorías de Proyectos de Egreso
+  [software educativo]. CC BY-NC-SA 4.0.
+-->
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agenda de Tutorías</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --tinta:#16273D;
+  --tinta-70:rgba(22,39,61,.70);
+  --tinta-45:rgba(22,39,61,.45);
+  --papel:#E9EAE4;
+  --superficie:#FFFFFF;
+  --libre:#0B6E5F;
+  --libre-suave:#DCEBE7;
+  --propio:#5B3FA8;
+  --propio-suave:#E6E1F5;
+  --ajeno:#CFD1CA;
+  --alerta:#9A3412;
+  --linea:rgba(22,39,61,.14);
+  --radio:3px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--papel);color:var(--tinta);
+  font-family:'IBM Plex Sans',system-ui,sans-serif;
+  font-size:15px;line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+.envoltura{max-width:1120px;margin:0 auto;padding:0 20px 64px}
+
+/* ---------- encabezado ---------- */
+.cabecera{padding:28px 0 20px;border-bottom:2px solid var(--tinta)}
+.eyebrow{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--tinta-45);margin:0 0 6px
+}
+.cabecera h1{
+  font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(26px,4.4vw,40px);
+  letter-spacing:-.02em;margin:0;line-height:1.05
+}
+.cabecera .sub{margin:6px 0 0;color:var(--tinta-70);font-size:14px}
+
+/* ---------- barra de identidad ---------- */
+.identidad{
+  display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;
+  background:var(--superficie);border:1px solid var(--linea);border-radius:var(--radio);
+  padding:12px 16px;margin:18px 0
+}
+.identidad .quien{font-size:14px}
+.identidad .quien strong{font-weight:600}
+
+/* ---------- botones ---------- */
+button{font-family:inherit;font-size:14px;cursor:pointer;border-radius:var(--radio)}
+.btn{
+  background:var(--tinta);color:#fff;border:1px solid var(--tinta);
+  padding:8px 16px;font-weight:500;transition:opacity .15s
+}
+.btn:hover{opacity:.85}
+.btn.fantasma{background:transparent;color:var(--tinta)}
+.btn.peligro{background:var(--alerta);border-color:var(--alerta)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* ---------- navegación de semanas ---------- */
+.semanas{
+  display:flex;align-items:center;gap:10px;margin:22px 0 14px;flex-wrap:wrap
+}
+.semanas select{
+  font-family:'IBM Plex Mono',monospace;font-size:14px;padding:8px 10px;
+  border:1px solid var(--tinta);border-radius:var(--radio);background:var(--superficie);
+  color:var(--tinta);flex:1;min-width:220px
+}
+.flecha{
+  background:var(--superficie);border:1px solid var(--tinta);color:var(--tinta);
+  width:38px;height:38px;font-size:16px;line-height:1
+}
+
+/* ---------- leyenda ---------- */
+.leyenda{display:flex;flex-wrap:wrap;gap:16px;margin:0 0 16px;font-size:12.5px;color:var(--tinta-70)}
+.leyenda span{display:flex;align-items:center;gap:7px}
+.muestra{width:13px;height:13px;border-radius:2px;display:inline-block}
+
+/* ---------- grilla ---------- */
+.grilla{width:100%;border-collapse:collapse;background:var(--superficie);
+  border:1px solid var(--linea)}
+.grilla th{
+  font-family:'Archivo',sans-serif;font-weight:600;font-size:12px;letter-spacing:.06em;
+  text-transform:uppercase;text-align:left;padding:10px 12px;
+  border-bottom:1px solid var(--tinta);color:var(--tinta)
+}
+.grilla th .fecha{display:block;font-family:'IBM Plex Mono',monospace;font-weight:400;
+  font-size:11px;letter-spacing:0;text-transform:none;color:var(--tinta-45);margin-top:2px}
+.grilla td{border:1px solid var(--linea);padding:0;vertical-align:top;width:17.5%}
+.hora{
+  font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--tinta-70);
+  padding:10px 12px;white-space:nowrap;width:12%;
+  border-right:1px solid var(--tinta)!important;background:var(--papel)
+}
+.celda{
+  width:100%;height:100%;min-height:56px;border:0;background:transparent;
+  padding:9px 10px;text-align:left;font-family:inherit;font-size:12.5px;
+  display:block;color:var(--tinta);line-height:1.35
+}
+.celda .etiqueta{
+  font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.08em;
+  text-transform:uppercase;display:block;margin-bottom:3px
+}
+.libre .celda{background:var(--libre-suave);color:var(--libre);font-weight:500}
+.libre .celda:hover{background:var(--libre);color:#fff}
+.ocupada .celda{background:var(--superficie);color:var(--tinta-70);cursor:default}
+.propia .celda{background:var(--propio-suave);color:var(--propio);font-weight:500;cursor:pointer}
+.bloqueada .celda{
+  background:repeating-linear-gradient(135deg,var(--papel),var(--papel) 5px,#DFE0DA 5px,#DFE0DA 10px);
+  color:var(--tinta-45);cursor:default
+}
+.pasada .celda{background:var(--papel);color:var(--tinta-45);cursor:default;opacity:.6}
+
+/* ---------- mis tutorías ---------- */
+.materias{
+  display:block;margin-bottom:4px;padding-bottom:4px;border-bottom:1px dotted rgba(22,39,61,.18);
+  font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.03em;
+  text-transform:uppercase;line-height:1.3;opacity:.85
+}
+.enlace{
+  background:none;border:0;padding:0;color:var(--tinta);text-decoration:underline;
+  font-size:13px;cursor:pointer
+}
+.seccion{margin-top:38px}
+.seccion h2{
+  font-family:'Archivo',sans-serif;font-size:17px;font-weight:600;margin:0 0 12px;
+  padding-bottom:8px;border-bottom:1px solid var(--tinta)
+}
+.lista{list-style:none;margin:0;padding:0}
+.lista li{
+  display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;
+  background:var(--superficie);border:1px solid var(--linea);border-radius:var(--radio);
+  padding:11px 14px;margin-bottom:8px;font-size:14px
+}
+.lista .cuando{font-family:'IBM Plex Mono',monospace;font-size:13px}
+.estado{
+  font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.08em;
+  text-transform:uppercase;padding:3px 7px;border-radius:2px;background:var(--papel)
+}
+.vacio{color:var(--tinta-45);font-size:14px;padding:14px 0}
+
+/* ---------- ventanas ---------- */
+.telon{
+  position:fixed;inset:0;background:rgba(22,39,61,.55);display:none;
+  align-items:center;justify-content:center;padding:20px;z-index:50
+}
+.telon.visible{display:flex}
+.ventana{
+  background:var(--superficie);border-radius:var(--radio);max-width:460px;width:100%;
+  padding:24px;max-height:90vh;overflow:auto
+}
+.ventana h3{font-family:'Archivo',sans-serif;font-size:19px;margin:0 0 4px}
+.ventana .cuando-modal{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--tinta-70);margin:0 0 18px}
+label{display:block;font-size:13px;font-weight:500;margin:14px 0 5px}
+input,select,textarea{
+  width:100%;font-family:inherit;font-size:14px;padding:9px 10px;
+  border:1px solid var(--linea);border-radius:var(--radio);background:var(--superficie);color:var(--tinta)
+}
+textarea{resize:vertical;min-height:70px}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--tinta);outline-offset:-1px}
+.acciones{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+.aviso{
+  background:#FDF4E7;border-left:3px solid #B45309;padding:11px 13px;font-size:13px;
+  margin:14px 0 0;line-height:1.45
+}
+.error{color:var(--alerta);font-size:13.5px;margin:12px 0 0}
+.ayuda{font-size:12.5px;color:var(--tinta-45);margin:5px 0 0}
+
+/* ---------- pie ---------- */
+.pie{
+  margin-top:52px;padding-top:18px;border-top:1px solid var(--linea);
+  font-size:11.5px;color:var(--tinta-45);line-height:1.65
+}
+.pie a{color:var(--tinta-45)}
+
+.grupos{display:grid;grid-template-columns:1fr;gap:7px;margin-top:4px}
+.grupo{
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+  background:var(--superficie);border:1px solid var(--linea);border-radius:var(--radio);
+  padding:13px 14px;text-align:left;width:100%;font-size:14.5px;color:var(--tinta)
+}
+.grupo:hover{border-color:var(--tinta);background:var(--papel)}
+.grupo .nombre{font-weight:500}
+.grupo .marca-grupo{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--tinta-45);white-space:nowrap
+}
+.cerrada{
+  background:var(--superficie);border:1px solid var(--linea);border-radius:var(--radio);
+  padding:40px 28px;text-align:center;margin-top:26px
+}
+.cerrada h2{font-family:'Archivo',sans-serif;font-size:19px;margin:0 0 8px}
+.cerrada p{margin:0;color:var(--tinta-70);font-size:14.5px;max-width:460px;margin-inline:auto}
+.cargando{padding:60px 0;text-align:center;color:var(--tinta-45);
+  font-family:'IBM Plex Mono',monospace;font-size:13px}
+
+/* ---------- teléfono ---------- */
+.dias-movil{display:none;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.dias-movil button{
+  flex:1;min-width:60px;background:var(--superficie);border:1px solid var(--linea);
+  padding:9px 4px;font-size:12px;color:var(--tinta-70)
+}
+.dias-movil button.activo{background:var(--tinta);color:#fff;border-color:var(--tinta)}
+@media(max-width:760px){
+  .dias-movil{display:flex}
+  .grilla td{width:auto}
+  .hora{width:34%}
+  .grilla th.oculto-movil,.grilla td.oculto-movil{display:none}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="envoltura">
+
+  <header class="cabecera">
+    <p class="eyebrow" id="eyebrow">Proyectos de egreso</p>
+    <h1>Agenda de tutorías</h1>
+    <p class="sub" id="subtitulo">Cargando…</p>
+  </header>
+
+  <div class="identidad" id="identidad">
+    <div class="quien" id="quien">Todavía no te identificaste.</div>
+    <div>
+      <button class="btn fantasma" id="btnSalir" style="display:none">Salir</button>
+      <button class="btn" id="btnIdentidad">Identificar grupo</button>
+    </div>
+  </div>
+
+  <div id="cuerpo" class="cargando">Cargando la agenda…</div>
+
+  <footer class="pie">
+    <strong>Agenda de Tutorías de Proyectos de Egreso</strong><br>
+    © 2026 Tamara Ricketts. DGETP.<br>
+    Licencia Creative Commons Atribución-NoComercial-CompartirIgual 4.0 Internacional (CC BY-NC-SA 4.0).
+    Usted es libre de compartir y adaptar esta herramienta, siempre que atribuya la autoría original,
+    no la utilice con fines comerciales, y distribuya sus adaptaciones bajo esta misma licencia.<br>
+    Texto completo: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es">creativecommons.org/licenses/by-nc-sa/4.0/deed.es</a><br>
+    Cita sugerida: Ricketts, T. (2026). <em>Agenda de Tutorías de Proyectos de Egreso</em> [software educativo]. CC BY-NC-SA 4.0.
+  </footer>
+</div>
+
+<div class="telon" id="telon"><div class="ventana" id="ventana"></div></div>
+
+<script>
+/* =====================================================================
+   CONFIGURACIÓN — pegar acá la URL del Apps Script (termina en /exec)
+   ===================================================================== */
+const API = "PEGAR_AQUI_LA_URL_DEL_APPS_SCRIPT";
+/* ===================================================================== */
+
+const DIAS = ['Lunes','Martes','Miércoles','Jueves','Viernes'];
+const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','setiembre','octubre','noviembre','diciembre'];
+
+let estado = null;
+let semanaActual = 0;
+let diaMovil = 0;
+let sesion = JSON.parse(localStorage.getItem('agendaTutorias') || 'null');
+
+/* ---------- utilidades de fecha ---------- */
+const aTexto = f => f.getFullYear() + '-' + String(f.getMonth()+1).padStart(2,'0') + '-' + String(f.getDate()).padStart(2,'0');
+const aFecha = t => { const [a,m,d] = t.split('-').map(Number); return new Date(a, m-1, d); };
+const legible = t => { const f = aFecha(t); return f.getDate() + ' de ' + MESES[f.getMonth()]; };
+
+function lunesDe(indice){
+  const inicio = aFecha(estado.config.fechaInicio);
+  const f = new Date(inicio);
+  f.setDate(f.getDate() + indice * 7);
+  return f;
+}
+function fechasDeSemana(indice){
+  const lunes = lunesDe(indice);
+  return DIAS.map((_, i) => { const f = new Date(lunes); f.setDate(f.getDate()+i); return aTexto(f); });
+}
+function minutosDe(franja){
+  const [ini, fin] = franja.split('-').map(s => s.trim().replace(/\s/g,''));
+  const m = t => { const [h,mm] = t.split(':').map(Number); return h*60+mm; };
+  return Math.max(0, m(fin) - m(ini));
+}
+function yaPaso(fecha, franja){
+  const inicio = franja.split('-')[0].trim().replace(/\s/g,'');
+  const [h,mm] = inicio.split(':').map(Number);
+  const f = aFecha(fecha); f.setHours(h, mm, 0, 0);
+  return f.getTime() < Date.now();
+}
+
+/* ---------- comunicación ---------- */
+async function pedir(datos){
+  if (API.indexOf('PEGAR_AQUI') === 0){
+    return { ok:false, error:'La herramienta todavía no está conectada a su hoja de cálculo.' };
+  }
+  try{
+    if (datos.accion === 'estado'){
+      const r = await fetch(API + '?accion=estado');
+      return await r.json();
+    }
+    const r = await fetch(API, { method:'POST', body: JSON.stringify(datos) });
+    return await r.json();
+  }catch(err){
+    return { ok:false, error:'No fue posible establecer la conexión. Verifique su conexión e intente nuevamente.' };
+  }
+}
+
+/* ---------- carga ---------- */
+async function cargar(){
+  const r = await pedir({ accion:'estado' });
+  if (!r.ok){
+    document.getElementById('cuerpo').innerHTML =
+      '<p class="error" style="text-align:center">' + (r.error || 'No se pudo cargar la agenda.') + '</p>';
+    return;
+  }
+  estado = r.datos;
+  document.getElementById('eyebrow').textContent = estado.config.instituto + ' · Proyectos de egreso';
+  document.getElementById('subtitulo').textContent =
+    'Grupo ' + estado.config.grupoClase + ' · ' + estado.config.semanas + ' semanas desde el ' + legible(estado.config.fechaInicio);
+  if (semanaActual === 0) semanaActual = semanaSugerida();
+  dibujarIdentidad();
+  dibujar();
+}
+
+function semanaSugerida(){
+  for (let i = 0; i < estado.config.semanas; i++){
+    const lunes = lunesDe(i);
+    const domingo = new Date(lunes); domingo.setDate(domingo.getDate()+6); domingo.setHours(23,59,59);
+    if (Date.now() <= domingo.getTime()) return i;
+  }
+  return estado.config.semanas - 1;
+}
+
+/* ---------- estado de una celda ---------- */
+function franjasDeAsignatura(a){
+  const f = estado.config.franjas;
+  const desde = f.indexOf(a.franjaDesde), hasta = f.indexOf(a.franjaHasta);
+  if (desde === -1 || hasta === -1) return [];
+  return f.slice(Math.min(desde,hasta), Math.max(desde,hasta) + 1);
+}
+
+function asignaturasEn(fecha, franja){
+  const dia = aFecha(fecha).getDay();
+  return (estado.asignaturas || []).filter(a =>
+    a.dias.indexOf(dia) !== -1 && franjasDeAsignatura(a).indexOf(franja) !== -1);
+}
+
+function situacion(fecha, franja){
+  const bloqueo = estado.bloqueos.find(b => b.fecha === fecha && (b.franja === 'TODO' || b.franja === franja));
+  if (bloqueo) return { tipo:'bloqueada', motivo: bloqueo.motivo };
+  const reserva = estado.reservas.find(r => r.fecha === fecha && r.franja === franja);
+  if (reserva) return { tipo: (sesion && reserva.grupo === sesion.grupo) ? 'propia' : 'ocupada', reserva };
+  if (yaPaso(fecha, franja)) return { tipo:'pasada' };
+  return { tipo:'libre' };
+}
+
+/* ---------- dibujo ---------- */
+function dibujar(){
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(estado.config.fechaInicio || '')){
+    document.getElementById('cuerpo').className = '';
+    document.getElementById('cuerpo').innerHTML = '<div class="cerrada"><h2>La agenda no está disponible</h2><p>Hay un problema con las fechas del período. Comuníquese con la docente para su revisión.</p></div>';
+    document.getElementById('identidad').style.display = 'none';
+    return;
+  }
+  if (!estado.config.agendaAbierta){
+    document.getElementById('cuerpo').className = '';
+    document.getElementById('cuerpo').innerHTML =
+      '<div class="cerrada"><h2>La agenda todavía no está disponible</h2>'
+      + '<p>Estamos terminando de configurar los horarios de tutoría. '
+      + 'En cuanto esté habilitada van a poder reservar desde esta misma página.</p></div>';
+    document.getElementById('identidad').style.display = 'none';
+    return;
+  }
+  document.getElementById('identidad').style.display = '';
+
+  const fechas = fechasDeSemana(semanaActual);
+  const franjas = estado.config.franjas;
+
+  let html = '';
+
+  html += '<div class="semanas">';
+  html += '<button class="flecha" id="anterior" ' + (semanaActual===0?'disabled':'') + ' aria-label="Semana anterior">←</button>';
+  html += '<select id="selectorSemana">';
+  for (let i = 0; i < estado.config.semanas; i++){
+    const f = fechasDeSemana(i);
+    html += '<option value="'+i+'"'+(i===semanaActual?' selected':'')+'>Semana '+(i+1)+' · '+legible(f[0])+' al '+legible(f[4])+'</option>';
+  }
+  html += '</select>';
+  html += '<button class="flecha" id="siguiente" ' + (semanaActual>=estado.config.semanas-1?'disabled':'') + ' aria-label="Semana siguiente">→</button>';
+  html += '</div>';
+
+  html += '<div class="leyenda">'
+    + '<span><i class="muestra" style="background:var(--libre-suave);border:1px solid var(--libre)"></i>Libre</span>'
+    + '<span><i class="muestra" style="background:#fff;border:1px solid var(--ajeno)"></i>Reservado por otro grupo</span>'
+    + '<span><i class="muestra" style="background:var(--propio-suave);border:1px solid var(--propio)"></i>Su grupo</span>'
+    + '<span><i class="muestra" style="background:#DFE0DA"></i>No disponible</span>'
+    + '</div>';
+
+  html += '<div class="dias-movil">';
+  DIAS.forEach((d,i) => { html += '<button data-dia="'+i+'" class="'+(i===diaMovil?'activo':'')+'">'+d.slice(0,3)+'</button>'; });
+  html += '</div>';
+
+  html += '<table class="grilla"><thead><tr><th class="hora">Horario</th>';
+  DIAS.forEach((d,i) => {
+    html += '<th class="'+(i===diaMovil?'':'oculto-movil')+'">'+d+'<span class="fecha">'+legible(fechas[i])+'</span></th>';
+  });
+  html += '</tr></thead><tbody>';
+
+  franjas.forEach(franja => {
+    html += '<tr><td class="hora">'+franja+'</td>';
+    fechas.forEach((fecha, i) => {
+      const s = situacion(fecha, franja);
+      const oculto = i===diaMovil ? '' : ' oculto-movil';
+      let contenido = '', atributos = '';
+      if (s.tipo === 'libre'){
+        contenido = '<span class="etiqueta">Libre</span>Reservar';
+        atributos = 'data-accion="reservar" data-fecha="'+fecha+'" data-franja="'+franja+'"';
+      } else if (s.tipo === 'propia'){
+        contenido = '<span class="etiqueta">'+(s.reserva.convocatoria ? 'Convocatoria' : 'Su grupo')+'</span>'+s.reserva.grupo;
+        atributos = 'data-accion="ver" data-id="'+s.reserva.id+'"';
+      } else if (s.tipo === 'ocupada'){
+        contenido = '<span class="etiqueta">Reservado</span>'+s.reserva.grupo;
+      } else if (s.tipo === 'bloqueada'){
+        contenido = '<span class="etiqueta">No disponible</span>'+(s.motivo||'');
+      } else {
+        contenido = '<span class="etiqueta">—</span>';
+      }
+      const materias = asignaturasEn(fecha, franja);
+      if (materias.length && s.tipo !== 'bloqueada'){
+        contenido = '<span class="materias">'+materias.map(m => escapar(m.nombre)).join(' · ')+'</span>' + contenido;
+      }
+      html += '<td class="'+s.tipo+oculto+'"><'+(atributos?'button':'div')+' class="celda" '+atributos+'>'+contenido+'</'+(atributos?'button':'div')+'></td>';
+    });
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+
+  html += misTutorias();
+
+  document.getElementById('cuerpo').className = '';
+  document.getElementById('cuerpo').innerHTML = html;
+  conectarEventos();
+}
+
+function misTutorias(){
+  if (!sesion) return '';
+  const mias = estado.reservas
+    .filter(r => r.grupo === sesion.grupo)
+    .sort((a,b) => a.fecha.localeCompare(b.fecha) || a.franja.localeCompare(b.franja));
+
+  const NOMBRES_DIA = { 1:'Lunes', 2:'Martes', 3:'Miércoles', 4:'Jueves', 5:'Viernes' };
+  const hoy = aTexto(new Date());
+  const compromisos = (estado.obligatorias || []).filter(p =>
+    p.grupo === sesion.grupo && (!p.hasta || hoy <= p.hasta));
+
+  let html = '<div class="seccion"><h2>Tutorías del grupo</h2>';
+
+  if (compromisos.length){
+    html += '<div class="aviso"><strong>Tutorías obligatorias.</strong> '
+      + 'Su grupo debe asistir obligatoriamente en los siguientes horarios, sin necesidad de agendar:<br>'
+      + compromisos.map(p =>
+          '· ' + p.dias.map(d => NOMBRES_DIA[d]).join(' y ')
+          + ', de ' + p.franjaDesde.split(' - ')[0] + ' a ' + p.franjaHasta.split(' - ')[1]
+          + (p.hasta ? ' (hasta el ' + legible(p.hasta) + ')' : '')
+        ).join('<br>')
+      + '</div>';
+  }
+
+  if (!mias.length){
+    html += '<p class="vacio">Aún no ha reservado tutorías.</p></div>';
+    return html;
+  }
+
+  html += '<ul class="lista">';
+  mias.forEach(r => {
+    const pasada = yaPaso(r.fecha, r.franja);
+    html += '<li><span class="cuando">'+legible(r.fecha)+' · '+r.franja+'</span>'
+      + '<span class="estado">'+(r.convocatoria ? 'Convocatoria' : etiquetaEstado(r.estado))+'</span>'
+      + (pasada || r.convocatoria ? '' : '<button class="btn fantasma" data-accion="cancelar" data-id="'+r.id+'">Cancelar</button>')
+      + '</li>';
+  });
+  html += '</ul></div>';
+  return html;
+}
+
+function etiquetaEstado(e){
+  return { reservada:'Reservada', asistio:'Asistió', ausente:'No asistió', reprogramada:'Reprogramada' }[e] || e;
+}
+
+/* ---------- eventos ---------- */
+function conectarEventos(){
+  const anterior = document.getElementById('anterior');
+  const siguiente = document.getElementById('siguiente');
+  const selector = document.getElementById('selectorSemana');
+  if (anterior) anterior.onclick = () => { semanaActual--; dibujar(); };
+  if (siguiente) siguiente.onclick = () => { semanaActual++; dibujar(); };
+  if (selector) selector.onchange = e => { semanaActual = Number(e.target.value); dibujar(); };
+
+  document.querySelectorAll('.dias-movil button').forEach(b => {
+    b.onclick = () => { diaMovil = Number(b.dataset.dia); dibujar(); };
+  });
+
+  document.querySelectorAll('[data-accion]').forEach(el => {
+    el.onclick = () => {
+      const a = el.dataset.accion;
+      if (a === 'reservar') abrirReserva(el.dataset.fecha, el.dataset.franja);
+      if (a === 'cancelar' || a === 'ver') abrirCancelacion(el.dataset.id);
+    };
+  });
+}
+
+/* ---------- identidad ---------- */
+function dibujarIdentidad(){
+  const quien = document.getElementById('quien');
+  const salir = document.getElementById('btnSalir');
+  const identificar = document.getElementById('btnIdentidad');
+  if (sesion){
+    quien.innerHTML = 'Grupo identificado: <strong>' + sesion.grupo + '</strong>. '
+      + '<button class="enlace" id="btnCorreo">Cambiar dirección de correo</button>';
+    salir.style.display = '';
+    identificar.style.display = 'none';
+    const bc = document.getElementById('btnCorreo');
+    if (bc) bc.onclick = abrirCambioCorreo;
+  } else {
+    quien.textContent = 'Identifique su grupo para reservar una tutoría.';
+    salir.style.display = 'none';
+    identificar.style.display = '';
+  }
+}
+
+document.getElementById('btnIdentidad').onclick = abrirIdentidad;
+
+function abrirCambioCorreo(){
+  abrirVentana('<h3>Dirección de correo del grupo</h3>'
+    + '<p class="cuando-modal">'+escapar(sesion.grupo)+'</p>'
+    + '<label for="nuevoCorreo">Nueva dirección</label>'
+    + '<input id="nuevoCorreo" type="email" placeholder="direccion@ejemplo.com">'
+    + '<p class="ayuda">A esta dirección se envían las comunicaciones referidas a sus tutorías.</p>'
+    + '<p class="error" id="errorCorreo" style="display:none"></p>'
+    + '<div class="acciones"><button class="btn fantasma" id="cerrar">Cancelar</button>'
+    + '<button class="btn" id="confirmar">Guardar</button></div>');
+  document.getElementById('cerrar').onclick = cerrarVentana;
+  document.getElementById('confirmar').onclick = async e => {
+    const correo = document.getElementById('nuevoCorreo').value.trim();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(correo)){
+      return mostrarError(document.getElementById('errorCorreo'), 'Indique una dirección de correo válida.');
+    }
+    e.target.disabled = true;
+    const r = await pedir({ accion:'cambiarCorreoGrupo', grupo:sesion.grupo, codigo:sesion.codigo, correo });
+    if (!r.ok){ e.target.disabled=false; return mostrarError(document.getElementById('errorCorreo'), r.error); }
+    cerrarVentana();
+  };
+}
+document.getElementById('btnSalir').onclick = () => {
+  sesion = null; localStorage.removeItem('agendaTutorias');
+  dibujarIdentidad(); dibujar();
+};
+
+function abrirIdentidad(){
+  abrirVentana(
+    '<h3>Identificación del grupo</h3>'
+    + '<p class="cuando-modal">Seleccione su grupo de proyecto.</p>'
+    + '<div class="grupos">'
+    + estado.grupos.map(g =>
+        '<button class="grupo" data-grupo="'+escapar(g.nombre)+'" data-tiene="'+(g.tieneCodigo?'1':'0')+'">'
+        + '<span class="nombre">'+escapar(g.nombre)+'</span>'
+        + '<span class="marca-grupo">'+(g.tieneCodigo ? 'Con código' : 'Sin código')+'</span>'
+        + '</button>').join('')
+    + '</div>'
+    + '<div class="acciones"><button class="btn fantasma" id="cerrar">Cancelar</button></div>'
+  );
+  document.getElementById('cerrar').onclick = cerrarVentana;
+  document.querySelectorAll('.grupo').forEach(b => {
+    b.onclick = () => pedirCodigo(b.dataset.grupo, b.dataset.tiene === '0');
+  });
+}
+
+function pedirCodigo(grupo, esNuevo){
+  abrirVentana(
+    '<h3>'+escapar(grupo)+'</h3>'
+    + '<p class="cuando-modal">'+(esNuevo
+        ? 'Este grupo aún no tiene código asignado.'
+        : 'Ingrese el código del grupo.')+'</p>'
+    + (esNuevo
+        ? '<label for="cod">Defina un código de cuatro cifras</label><input id="cod" inputmode="numeric" maxlength="4" placeholder="4 cifras">'
+          + '<label for="cod2">Repita el código</label><input id="cod2" inputmode="numeric" maxlength="4">'
+          + '<label for="correo">Correo del grupo</label><input id="correo" type="email" placeholder="direccion@ejemplo.com">'
+          + '<p class="ayuda">El código quedará registrado: comuníquelo a los integrantes del grupo. A esa dirección de correo el sistema enviará cualquier comunicación referida a sus tutorías.</p>'
+        : '<label for="cod">Código del grupo</label><input id="cod" inputmode="numeric" maxlength="4" placeholder="4 cifras">')
+    + '<p class="error" id="errorIdentidad" style="display:none"></p>'
+    + '<div class="acciones"><button class="btn fantasma" id="volver">Volver</button>'
+    + '<button class="btn" id="confirmar">Ingresar</button></div>'
+  );
+
+  document.getElementById('volver').onclick = abrirIdentidad;
+  const campo = document.getElementById('cod');
+  campo.focus();
+  campo.onkeydown = e => { if (e.key === 'Enter' && !esNuevo) document.getElementById('confirmar').click(); };
+
+  document.getElementById('confirmar').onclick = async e => {
+    const codigo = (campo.value || '').trim();
+    const error = document.getElementById('errorIdentidad');
+    error.style.display = 'none';
+
+    if (!/^\d{4}$/.test(codigo)) return mostrarError(error, 'El código debe contener exactamente cuatro cifras.');
+    if (esNuevo && codigo !== (document.getElementById('cod2').value || '').trim()){
+      return mostrarError(error, 'Los códigos ingresados no coinciden.');
+    }
+    const correo = esNuevo ? (document.getElementById('correo').value || '').trim() : '';
+    if (esNuevo && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(correo)){
+      return mostrarError(error, 'Indique una dirección de correo válida.');
+    }
+
+    e.target.disabled = true;
+    const r = await pedir({ accion: esNuevo ? 'definirCodigo' : 'verificarCodigo', grupo, codigo, correo });
+    if (!r.ok){ e.target.disabled = false; return mostrarError(error, r.error); }
+
+    sesion = { grupo, codigo };
+    localStorage.setItem('agendaTutorias', JSON.stringify(sesion));
+    cerrarVentana(); dibujarIdentidad(); await cargar();
+  };
+}
+
+/* ---------- reservar ---------- */
+function abrirReserva(fecha, franja){
+  if (!sesion){ abrirIdentidad(); return; }
+
+  const fechasSemana = fechasDeSemana(semanaActual);
+  const yaTiene = estado.reservas.filter(r => r.grupo === sesion.grupo && fechasSemana.indexOf(r.fecha) !== -1);
+
+  let aviso = '';
+  if (yaTiene.length){
+    aviso = '<div class="aviso">Por favor, recuerde agendar tutorías con sentido de '
+      + 'responsabilidad y compañerismo, teniendo en consideración las necesidades que '
+      + 'otros grupos puedan tener. Muchas gracias</div>';
+  }
+
+  abrirVentana(
+    '<h3>Reservar tutoría</h3>'
+    + '<p class="cuando-modal">'+legible(fecha)+' · '+franja+' · '+sesion.grupo+'</p>'
+    + aviso
+    + '<label for="tema">Tema o consulta a tratar</label>'
+    + '<textarea id="tema" placeholder="Indique el aspecto del proyecto sobre el que requieren orientación."></textarea>'
+    + '<label for="integrantes">Integrantes que asisten</label>'
+    + '<input id="integrantes" placeholder="Nombres de los integrantes, separados por coma">'
+    + '<p class="error" id="errorReserva" style="display:none"></p>'
+    + '<div class="acciones"><button class="btn fantasma" id="cerrar">Cancelar</button>'
+    + '<button class="btn" id="confirmar">Confirmar reserva</button></div>'
+  );
+
+  document.getElementById('cerrar').onclick = cerrarVentana;
+  document.getElementById('confirmar').onclick = async e => {
+    e.target.disabled = true;
+    const r = await pedir({
+      accion:'reservar', grupo:sesion.grupo, codigo:sesion.codigo, fecha, franja,
+      tema: document.getElementById('tema').value.trim(),
+      integrantes: document.getElementById('integrantes').value.trim()
+    });
+    if (!r.ok){
+      e.target.disabled = false;
+      return mostrarError(document.getElementById('errorReserva'), r.error);
+    }
+    cerrarVentana(); await cargar();
+  };
+}
+
+/* ---------- cancelar ---------- */
+function abrirCancelacion(id){
+  const r = estado.reservas.find(x => x.id === id);
+  if (!r) return;
+  if (!sesion || r.grupo !== sesion.grupo){ abrirIdentidad(); return; }
+
+  abrirVentana(
+    '<h3>'+(r.convocatoria ? 'Convocatoria de la docente' : 'Tu tutoría')+'</h3>'
+    + '<p class="cuando-modal">'+legible(r.fecha)+' · '+r.franja+'</p>'
+    + (r.tema ? '<p style="font-size:14px"><strong>Tema:</strong> '+escapar(r.tema)+'</p>' : '')
+    + (r.integrantes ? '<p style="font-size:14px"><strong>Asisten:</strong> '+escapar(r.integrantes)+'</p>' : '')
+    + '<p class="error" id="errorCancelar" style="display:none"></p>'
+    + (r.convocatoria ? '<div class="aviso">Esta instancia fue convocada por la docente. La asistencia es obligatoria y no admite cancelación.</div>' : '')
+    + '<div class="acciones"><button class="btn fantasma" id="cerrar">Volver</button>'
+    + (yaPaso(r.fecha, r.franja) || r.convocatoria ? '' : '<button class="btn peligro" id="confirmar">Cancelar tutoría</button>')
+    + '</div>'
+  );
+
+  document.getElementById('cerrar').onclick = cerrarVentana;
+  const confirmar = document.getElementById('confirmar');
+  if (confirmar) confirmar.onclick = async e => {
+    e.target.disabled = true;
+    const resp = await pedir({ accion:'cancelar', id, grupo:sesion.grupo, codigo:sesion.codigo });
+    if (!resp.ok){
+      e.target.disabled = false;
+      return mostrarError(document.getElementById('errorCancelar'), resp.error);
+    }
+    cerrarVentana(); await cargar();
+  };
+}
+
+/* ---------- ventanas ---------- */
+function abrirVentana(html){
+  document.getElementById('ventana').innerHTML = html;
+  document.getElementById('telon').classList.add('visible');
+}
+function cerrarVentana(){
+  document.getElementById('telon').classList.remove('visible');
+}
+document.getElementById('telon').onclick = e => { if (e.target.id === 'telon') cerrarVentana(); };
+document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrarVentana(); });
+
+function mostrarError(el, texto){
+  el.textContent = texto || 'Ocurrió un error.';
+  el.style.display = '';
+}
+function escapar(t){
+  return String(t).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+}
+
+cargar();
+
+/* La agenda es compartida: se refresca sola cada minuto para que nadie
+   intente reservar un horario que otro grupo acaba de tomar.
+   No se refresca mientras hay una ventana abierta, para no borrar lo escrito. */
+setInterval(() => {
+  if (!document.getElementById('telon').classList.contains('visible')) cargar();
+}, 60000);
+</script>
+</body>
+</html>
