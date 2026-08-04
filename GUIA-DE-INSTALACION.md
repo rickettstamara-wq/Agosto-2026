@@ -1,4 +1,4 @@
-# Agenda de Tutorías de Proyectos de Egreso
+# Sistema de Gestión de Proyectos de Egreso
 ## Guía de instalación
 
 Esta guía sirve tanto para la primera instalación como para cualquier otro instituto
@@ -214,6 +214,23 @@ traslada directamente a los estudiantes.
 El traslado entre instalaciones copia la configuración a otra copia de la herramienta
 sin volver a escribirla.
 
+## Docentes
+
+Los otros docentes del equipo entran con un **enlace personal**: no escriben clave
+ni recuerdan códigos, y el enlace los identifica. Se administran desde la sección
+**Docentes**, junto a Administrar agendas, fuera de cualquier agenda, porque una
+misma persona puede trabajar en varias.
+
+Para habilitar a alguien: **Agregar docente**, nombre y correo, marcar en qué agendas
+trabaja, guardar, y **Enviar enlace**. Le llega a su casilla con la explicación.
+
+Un docente ve todo lo de sus agendas y registra tres cosas: asistencias,
+observaciones y convocatorias, que quedan firmadas con su nombre. No configura
+turnos, período, asignaturas, feriados ni grupos, no bloquea horarios ni cancela
+tutorías, y no ve las agendas que no tiene asignadas.
+
+Si un enlace se filtra, **Regenerar enlace** invalida el anterior en el acto.
+
 ## Comunicaciones
 
 Todo lo que el sistema envía queda asentado en la pestaña **Comunicaciones**, con su
@@ -276,12 +293,12 @@ Así la URL se mantiene y no hay que tocar los HTML.
 
 ---
 
-**Agenda de Tutorías de Proyectos de Egreso**
-© 2026 Tamara Ricketts. DGETP.
+**Sistema de Gestión de Proyectos de Egreso**
+© 2026 Tamara Ricketts.
 Licencia Creative Commons Atribución-NoComercial-CompartirIgual 4.0 Internacional (CC BY-NC-SA 4.0).
 Usted es libre de compartir y adaptar esta herramienta, siempre que atribuya la autoría
 original, no la utilice con fines comerciales, y distribuya sus adaptaciones bajo esta
 misma licencia.
 Texto completo: https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es
-Cita sugerida: Ricketts, T. (2026). *Agenda de Tutorías de Proyectos de Egreso*
+Cita sugerida: Ricketts, T. (2026). *Sistema de Gestión de Proyectos de Egreso*
 [software educativo]. CC BY-NC-SA 4.0.

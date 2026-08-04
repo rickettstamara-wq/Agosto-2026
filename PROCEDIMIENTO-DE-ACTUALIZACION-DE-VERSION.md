@@ -1,6 +1,6 @@
 # PROCEDIMIENTO DE ACTUALIZACIÓN DE VERSIÓN
 
-**Agenda de Tutorías de Proyectos de Egreso.** Guarde este documento: el procedimiento
+**Sistema de Gestión de Proyectos de Egreso.** Guarde este documento: el procedimiento
 es siempre el mismo.
 
 La herramienta tiene **dos partes que se actualizan por separado**:
@@ -11,6 +11,45 @@ La herramienta tiene **dos partes que se actualizan por separado**:
 | Las páginas | GitHub Pages | `panel.html` y `agenda.html` |
 
 Actualizar una no actualiza la otra. Si le pasaron los cuatro archivos, van los cuatro.
+
+---
+
+## Parte 0 — Con el sistema en uso
+
+Una vez que hay estudiantes con sus códigos y correos cargados, la actualización
+lleva dos precauciones más. **Los datos nunca están en el código: viven en la
+planilla.** Reemplazar `Codigo.gs` o los HTML no los toca.
+
+**Antes de empezar**
+
+1. Panel → **Configuración → Cerrar la agenda**. Mientras dura la actualización
+   ningún estudiante queda a mitad de camino entre una versión y otra.
+2. Planilla → **Archivo → Hacer una copia**. Es el respaldo verdadero: conserva
+   todo, no solo lo que exportan los CSV.
+3. Panel → **Síntesis** → descargar los tres respaldos en CSV.
+
+**Después de terminar**
+
+4. Verificar que el panel carga y que los grupos siguen con su código y su correo
+   en la pestaña Grupos.
+5. Abrir un enlace de estudiante y comprobar que la grilla se ve.
+6. Panel → **Configuración → Abrir la agenda**.
+
+**Si algo sale mal**
+
+- Apps Script conserva las versiones anteriores: **Implementar → Administrar
+  implementaciones → lápiz → Versión**, y elegir la anterior.
+- GitHub conserva el historial de cada archivo: se puede volver a una versión
+  previa desde el propio repositorio.
+- La copia de la planilla del punto 2 permite reponer los datos.
+
+**Cuándo hace falta ejecutar `instalar`:** solo cuando la actualización agrega
+hojas o columnas nuevas. Se lo indico en cada entrega. Es la única operación que
+reescribe la planilla, y por eso el respaldo previo.
+
+**Cuándo conviene hacerlo:** fuera del horario de tutorías. Entre que se
+reimplementa el Apps Script y se reemplazan los HTML hay unos minutos en que las
+páginas viejas hablan con el servidor nuevo.
 
 ---
 
@@ -32,7 +71,7 @@ Actualizar una no actualiza la otra. Si le pasaron los cuatro archivos, van los 
 
 > **No hace falta tocar el botón Ejecutar.** Solo se usa cuando hay pestañas nuevas
 > que crear, y en ese caso conviene hacerlo desde la planilla: menú
-> **Agenda de Tutorías → Instalar / reparar hojas**. Nunca borra datos existentes.
+> **Sistema de Proyectos de Egreso → Instalar / reparar hojas**. Nunca borra datos existentes.
 
 ---
 
@@ -97,11 +136,11 @@ La dirección base sin nombre de archivo da error 404. Es normal: no hay página
 | "No está conectada a su hoja de cálculo" | Falta pegar la dirección en ese archivo | Parte 2, pasos 4 a 8 |
 | Se ve el código como texto suelto | El archivo se dañó al pegar | Borrarlo y volver a subirlo |
 | Los cambios no aparecen | Copia guardada en el navegador | `?v=` con número nuevo, o Ctrl+Shift+R |
-| "Falta la hoja X" | Hay pestañas nuevas sin crear | Planilla → menú **Agenda de Tutorías → Instalar / reparar hojas** |
+| "Falta la hoja X" | Hay pestañas nuevas sin crear | Planilla → menú **Sistema de Proyectos de Egreso → Instalar / reparar hojas** |
 | Error al ejecutar `instalar` desde el editor | No puede mostrar el cartel de confirmación | Las hojas ya se crearon igual; verificar en la planilla |
 | Error 404 en la dirección base | No hay página de inicio | Agregar `panel.html` o `agenda.html` al final |
 
 ---
 
-**Agenda de Tutorías de Proyectos de Egreso**
-© 2026 Tamara Ricketts. DGETP. CC BY-NC-SA 4.0
+**Sistema de Gestión de Proyectos de Egreso**
+© 2026 Tamara Ricketts. CC BY-NC-SA 4.0
