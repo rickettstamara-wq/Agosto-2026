@@ -269,7 +269,7 @@ function semanaDe(fecha){ return Math.floor((aFecha(fecha)-aFecha(estado.config.
 let estadoPrecargado = null;
 
 async function pedir(datos){
-  if (API.indexOf('PEGAR_AQUI')===0) return { ok:false, error:'El panel todavía no está conectado a su hoja de cálculo.' };
+  if (API.indexOf('https://script.google.com/macros/s/AKfycbwYoM-TjRPgDdrjdHuqjrsDy4zrsYxslf8rs8FoJMjVhiWSMuDiS36-vG97ABc6HHkUGg/exec')===0) return { ok:false, error:'El panel todavía no está conectado a su hoja de cálculo.' };
   try{
     let respuesta;
     if (datos.accion==='estado'){
