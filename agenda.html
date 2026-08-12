@@ -266,7 +266,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--tinta);outline-o
 /* =====================================================================
    CONFIGURACIÓN — pegar acá la URL del Apps Script (termina en /exec)
    ===================================================================== */
-const API = "https://script.google.com/macros/s/AKfycbzRhLC9ryra6bsnhPP-PjGii0V8KZSeKqZ7GOz4BXr1NwNCgJA4aKVNDplDB5MIs0ID1A/exec";
+const API = "PEGAR_AQUI_LA_URL_DEL_APPS_SCRIPT";
 /* ===================================================================== */
 
 const DIAS = ['Lunes','Martes','Miércoles','Jueves','Viernes'];
@@ -300,10 +300,17 @@ function minutosDe(franja){
   const m = t => { const [h,mm] = t.split(':').map(Number); return h*60+mm; };
   return Math.max(0, m(fin) - m(ini));
 }
+/* Toma las primeras dos cifras:dos cifras del turno como hora de inicio, sin
+   asumir qué separador se usó entre el inicio y el fin. */
+function horaInicioDe(franja){
+  const m = String(franja).match(/(\d{1,2}):(\d{2})/);
+  return m ? [Number(m[1]), Number(m[2])] : null;
+}
+
 function yaPaso(fecha, franja){
-  const inicio = franja.split('-')[0].trim().replace(/\s/g,'');
-  const [h,mm] = inicio.split(':').map(Number);
-  const f = aFecha(fecha); f.setHours(h, mm, 0, 0);
+  const hm = horaInicioDe(franja);
+  if (!hm) return false;
+  const f = aFecha(fecha); f.setHours(hm[0], hm[1], 0, 0);
   return f.getTime() < Date.now();
 }
 
@@ -358,7 +365,7 @@ function revisarCorreo(correo, repetido){
 
 /* ---------- comunicación ---------- */
 async function pedir(datos){
-  if (API.indexOf('https://script.google.com/macros/s/AKfycbwYoM-TjRPgDdrjdHuqjrsDy4zrsYxslf8rs8FoJMjVhiWSMuDiS36-vG97ABc6HHkUGg/exec') === 0){
+  if (API.indexOf('PEGAR_AQUI') === 0){
     return { ok:false, error:'La herramienta todavía no está conectada a su hoja de cálculo.' };
   }
   try{
