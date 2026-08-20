@@ -1,0 +1,1959 @@
+<!DOCTYPE html>
+<!--
+  Sistema de Gestión de Proyectos de Egreso — panel docente
+  © 2026 Tamara Ricketts.
+  Licencia Creative Commons Atribución-NoComercial-CompartirIgual 4.0 Internacional
+  (CC BY-NC-SA 4.0) — https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es
+  Cita sugerida: Ricketts, T. (2026). Sistema de Gestión de Proyectos de Egreso
+  [software educativo]. CC BY-NC-SA 4.0.
+-->
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Panel docente — Sistema de Gestión de Proyectos de Egreso</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --tinta:#16273D;--tinta-70:rgba(22,39,61,.70);--tinta-45:rgba(22,39,61,.45);
+  --papel:#E4E6E0;--superficie:#FFFFFF;
+  --libre:#0B6E5F;--libre-suave:#DCEBE7;--propio:#5B3FA8;--propio-suave:#E6E1F5;
+  --alerta:#9A3412;--ambar:#B45309;--linea:rgba(22,39,61,.14);--radio:3px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--papel);color:var(--tinta);font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.envoltura{max-width:1220px;margin:0 auto;padding:0 20px 64px}
+
+.cabecera{padding:24px 0 16px;border-bottom:2px solid var(--tinta);display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;justify-content:space-between}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--tinta-45);margin:0 0 5px}
+.cabecera h1{font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(22px,3.4vw,32px);letter-spacing:-.02em;margin:0;line-height:1.05}
+
+button{font-family:inherit;font-size:14px;cursor:pointer;border-radius:var(--radio)}
+.btn{background:var(--tinta);color:#fff;border:1px solid var(--tinta);padding:8px 15px;font-weight:500}
+.btn:hover{opacity:.85}
+.btn.fantasma{background:transparent;color:var(--tinta)}
+.btn.peligro{background:var(--alerta);border-color:var(--alerta)}
+.btn.chico{padding:5px 10px;font-size:12.5px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+
+.pestanas{display:flex;flex-wrap:wrap;gap:2px;margin:20px 0 22px;border-bottom:1px solid var(--linea)}
+.pestanas button{background:transparent;border:0;border-bottom:2px solid transparent;padding:10px 15px;color:var(--tinta-70);font-weight:500}
+.pestanas button.activa{color:var(--tinta);border-bottom-color:var(--tinta)}
+.barra-agenda{
+  display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:16px;
+  padding:10px 14px;background:var(--superficie);border:1px solid var(--linea);border-radius:var(--radio)
+}
+.barra-agenda label{margin:0;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--tinta-45)}
+.barra-agenda select{width:auto;flex:1;min-width:200px;font-size:13.5px;padding:6px 9px}
+
+.tarjeta{background:var(--superficie);border:1px solid var(--linea);border-radius:var(--radio);padding:20px;margin-bottom:18px}
+.tarjeta h2{font-family:'Archivo',sans-serif;font-size:17px;font-weight:600;margin:0 0 4px}
+.tarjeta .nota{color:var(--tinta-45);font-size:13px;margin:0 0 16px}
+
+.semanas{display:flex;align-items:center;gap:10px;margin:0 0 14px;flex-wrap:wrap}
+.semanas select{font-family:'IBM Plex Mono',monospace;font-size:14px;padding:8px 10px;border:1px solid var(--tinta);border-radius:var(--radio);background:var(--superficie);color:var(--tinta);flex:1;min-width:220px}
+.flecha{background:var(--superficie);border:1px solid var(--tinta);color:var(--tinta);width:38px;height:38px;font-size:16px}
+
+.grilla{width:100%;border-collapse:collapse;background:var(--superficie);border:1px solid var(--linea)}
+.grilla th{font-family:'Archivo',sans-serif;font-weight:600;font-size:12px;letter-spacing:.06em;text-transform:uppercase;text-align:left;padding:9px 11px;border-bottom:1px solid var(--tinta)}
+.grilla th .fecha{display:block;font-family:'IBM Plex Mono',monospace;font-weight:400;font-size:11px;letter-spacing:0;text-transform:none;color:var(--tinta-45);margin-top:2px}
+.grilla td{border:1px solid var(--linea);padding:0;vertical-align:top}
+.hora{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--tinta-70);padding:9px 11px;white-space:nowrap;width:11%;border-right:1px solid var(--tinta)!important;background:var(--papel)}
+.celda{width:100%;min-height:52px;border:0;background:transparent;padding:8px 9px;text-align:left;font-family:inherit;font-size:12.5px;display:block;color:var(--tinta);line-height:1.35;cursor:pointer}
+.celda .etiqueta{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:3px}
+.libre .celda{background:var(--libre-suave);color:var(--libre)}
+.ocupada .celda{background:var(--propio-suave);color:var(--propio);font-weight:500}
+.bloqueada .celda{background:repeating-linear-gradient(135deg,var(--papel),var(--papel) 5px,#D5D7D0 5px,#D5D7D0 10px);color:var(--tinta-45)}
+.pasada .celda{background:var(--superficie);color:var(--tinta-45);opacity:.65}
+
+table.datos{width:100%;border-collapse:collapse;font-size:13.5px}
+table.datos th{text-align:left;font-family:'Archivo',sans-serif;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--tinta-70);border-bottom:1px solid var(--tinta);padding:8px 9px}
+table.datos td{border-bottom:1px solid var(--linea);padding:9px}
+table.datos tr:last-child td{border-bottom:0}
+table.datos input,table.datos select{padding:5px 7px;font-size:13px}
+.num{font-family:'IBM Plex Mono',monospace;text-align:right;width:80px}
+
+label{display:block;font-size:13px;font-weight:500;margin:14px 0 5px}
+input,select,textarea{width:100%;font-family:inherit;font-size:14px;padding:9px 10px;border:1px solid var(--linea);border-radius:var(--radio);background:var(--superficie);color:var(--tinta)}
+textarea{resize:vertical;min-height:64px}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--tinta);outline-offset:-1px}
+.dos{display:grid;grid-template-columns:1fr 1fr;gap:0 18px}
+@media(max-width:640px){.dos{grid-template-columns:1fr}}
+
+.estado{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;padding:3px 7px;border-radius:2px;background:var(--papel);white-space:nowrap}
+.estado.asistio{background:var(--libre-suave);color:var(--libre)}
+.estado.ausente{background:#FBE3DA;color:var(--alerta)}
+.estado.pendiente{background:#FDF4E7;color:var(--ambar)}
+.cumple{color:var(--libre);font-weight:600}
+.no-cumple{color:var(--alerta);font-weight:600}
+
+.telon{position:fixed;inset:0;background:rgba(22,39,61,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:50}
+.telon.visible{display:flex}
+.ventana{background:var(--superficie);border-radius:var(--radio);max-width:520px;width:100%;padding:24px;max-height:90vh;overflow:auto}
+.ventana h3{font-family:'Archivo',sans-serif;font-size:19px;margin:0 0 4px}
+.cuando-modal{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--tinta-70);margin:0 0 16px}
+.acciones{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;flex-wrap:wrap}
+.aviso{background:#FDF4E7;border-left:3px solid var(--ambar);padding:11px 13px;font-size:13px;margin:14px 0 0;line-height:1.45}
+.error{color:var(--alerta);font-size:13.5px;margin:12px 0 0}
+.ayuda{font-size:12.5px;color:var(--tinta-45);margin:5px 0 0}
+.vacio{color:var(--tinta-45);font-size:14px;padding:14px 0}
+
+.acceso{max-width:380px;margin:12vh auto;background:var(--superficie);border:1px solid var(--linea);border-radius:var(--radio);padding:28px}
+.acceso h1{font-family:'Archivo',sans-serif;font-size:22px;margin:0 0 6px}
+
+.notificacion{
+  position:fixed;left:50%;transform:translateX(-50%);bottom:26px;z-index:80;
+  background:var(--tinta);color:#fff;padding:12px 20px;border-radius:var(--radio);
+  font-size:14px;box-shadow:0 6px 20px rgba(22,39,61,.25);max-width:min(560px,92vw);
+  opacity:0;pointer-events:none;transition:opacity .18s,transform .18s
+}
+.notificacion.visible{opacity:1;transform:translateX(-50%) translateY(-4px)}
+.notificacion.malo{background:var(--alerta)}
+.turno{display:grid;grid-template-columns:auto 1fr auto 1fr auto;gap:8px;align-items:center;margin-bottom:8px}
+.turno span{font-size:12.5px;color:var(--tinta-70)}
+.turno input{padding:7px 9px;font-family:'IBM Plex Mono',monospace}
+.turno .quitar{background:transparent;border:1px solid var(--linea);color:var(--alerta);width:32px;height:32px;line-height:1}
+@media(max-width:560px){.turno{grid-template-columns:auto 1fr auto;grid-template-areas:'a b e' 'c d e'}}
+.lista-control{list-style:none;margin:0 0 16px;padding:0;font-size:13.5px}
+.lista-control li{padding:5px 0;display:flex;gap:9px;align-items:flex-start}
+.lista-control .marca{font-family:'IBM Plex Mono',monospace;font-weight:600}
+.lista-control .si{color:var(--libre)}
+.lista-control .no{color:var(--alerta)}
+.instancia{display:flex;flex-wrap:wrap;gap:5px;align-items:center;padding:5px 0;border-bottom:1px dotted var(--linea)}
+.instancia:last-child{border-bottom:0}
+.instancia .quien{flex:1 1 100%;font-size:11.5px;line-height:1.25;font-weight:500}
+.instancia .quien em{font-style:normal;color:var(--ambar);font-weight:600}
+.marcas{display:inline-flex;gap:4px}
+.marca{
+  cursor:pointer;font-size:10.5px;padding:4px 8px;border-radius:2px;
+  background:var(--superficie);font-weight:500;transition:none
+}
+.marca.si{border:1px solid var(--libre);color:var(--libre)}
+.marca.no{border:1px solid var(--alerta);color:var(--alerta)}
+.marca.si.activa{background:var(--libre);color:#fff}
+.marca.no.activa{background:var(--alerta);color:#fff}
+.marca.futura{opacity:.5}
+.obs{background:transparent;border:1px solid var(--linea);color:var(--tinta-45);width:24px;height:22px;font-size:11px;line-height:1;padding:0}
+.obs.con-texto{background:var(--tinta);color:#fff;border-color:var(--tinta)}
+td.con-instancias{padding:5px 8px;vertical-align:top}
+td.vacia{background:var(--papel)}
+.sin-nada{display:block;padding:8px;color:var(--tinta-45);font-size:12px}
+.materias,.obligatorias{display:flex;flex-wrap:wrap;gap:3px}
+.materias{margin-bottom:5px}
+.obligatorias{margin-top:5px}
+.materia,.obl{
+  font-style:normal;font-size:9.5px;line-height:1.25;letter-spacing:.03em;
+  padding:2px 5px;border-radius:2px;white-space:nowrap;font-weight:500
+}
+.materia{background:var(--libre-suave);color:var(--libre)}
+.obl{background:#FAEEDA;color:#854F0B}
+.pie{margin-top:44px;padding-top:18px;border-top:1px solid var(--linea);font-size:11.5px;color:var(--tinta-45);line-height:1.65}
+.pie a{color:var(--tinta-45)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div id="pantallaAcceso" class="acceso">
+  <p class="eyebrow">Panel docente</p>
+  <h1>Agenda de tutorías</h1>
+  <label for="clave">Clave del panel</label>
+  <input id="clave" type="password" autocomplete="current-password">
+  <p class="error" id="errorAcceso" style="display:none"></p>
+  <div class="acciones"><button class="btn" id="btnEntrar">Entrar</button></div>
+</div>
+<script>
+  /* Se ejecuta de inmediato, antes del script principal, para que la pantalla de
+     clave no llegue a pintarse en el enlace de docente: ese enlace nunca la usa. */
+  if (new URLSearchParams(location.search).get('d')) {
+    document.getElementById('pantallaAcceso').style.display = 'none';
+  }
+</script>
+
+<div class="envoltura" id="aplicacion" style="display:none">
+  <header class="cabecera">
+    <div>
+      <p class="eyebrow" id="eyebrow">Panel docente</p>
+      <h1>Agenda de tutorías</h1>
+      <p class="ayuda" id="quienSoy" style="margin-top:4px"></p>
+    </div>
+    <button class="btn fantasma" id="btnSalir">Salir</button>
+  </header>
+
+  <div id="selectorAgenda"></div>
+
+  <nav class="pestanas" id="pestanas">
+    <button data-vista="agenda" class="activa">Agenda y bloqueos</button>
+    <button data-vista="asistencia">Asistencia</button>
+    <button data-vista="grupos">Grupos</button>
+    <button data-vista="asignaturas" style="display:none">Asignaturas</button>
+    <button data-vista="feriados" style="display:none">Feriados</button>
+    <button data-vista="comunicaciones">Comunicaciones</button>
+    <button data-vista="sintesis">Síntesis</button>
+    <button data-vista="config" style="display:none">Configuración</button>
+  </nav>
+
+  <div id="vista"></div>
+
+  <footer class="pie">
+    <strong>Sistema de Gestión de Proyectos de Egreso</strong><br>
+    © 2026 Tamara Ricketts.<br>
+    Licencia Creative Commons Atribución-NoComercial-CompartirIgual 4.0 Internacional (CC BY-NC-SA 4.0).
+    Usted es libre de compartir y adaptar esta herramienta, siempre que atribuya la autoría original,
+    no la utilice con fines comerciales, y distribuya sus adaptaciones bajo esta misma licencia.<br>
+    Texto completo: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es">creativecommons.org/licenses/by-nc-sa/4.0/deed.es</a><br>
+    Cita sugerida: Ricketts, T. (2026). <em>Sistema de Gestión de Proyectos de Egreso</em> [software educativo]. CC BY-NC-SA 4.0.
+  </footer>
+</div>
+
+<div class="telon" id="telon"><div class="ventana" id="ventana"></div></div>
+<div class="notificacion" id="notificacion" role="status" aria-live="polite"></div>
+
+<script>
+/* =====================================================================
+   CONFIGURACIÓN — pegar acá la URL del Apps Script (termina en /exec)
+   ===================================================================== */
+const API = "PEGAR_AQUI_LA_URL_DEL_APPS_SCRIPT";
+/* ===================================================================== */
+
+const DIAS = ['Lunes','Martes','Miércoles','Jueves','Viernes'];
+const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','setiembre','octubre','noviembre','diciembre'];
+
+let estado = null, clave = sessionStorage.getItem('claveAgenda') || '', semanaActual = 0, vistaActual = 'agenda';
+let correoGrupoClase = '', correosDeGrupos = [];
+let agendaActual = sessionStorage.getItem('agendaActual') || '';
+let gruposClase = [], docentes = [];
+
+/* El enlace personal del docente viaja en la dirección. Si está, no hay clave
+   que escribir: el enlace lo identifica. */
+const ENLACE_DOCENTE = new URLSearchParams(location.search).get('d') || '';
+let rol = 'admin', nombreActor = '';
+const esAdmin = () => rol === 'admin';
+
+const aTexto = f => f.getFullYear()+'-'+String(f.getMonth()+1).padStart(2,'0')+'-'+String(f.getDate()).padStart(2,'0');
+const aFecha = t => { const [a,m,d] = String(t).split('-').map(Number); return new Date(a,m-1,d); };
+const legible = t => { const f = aFecha(t); return f.getDate()+' de '+MESES[f.getMonth()]; };
+const escapar = t => String(t||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function lunesDe(i){ const f = aFecha(estado.config.fechaInicio); f.setDate(f.getDate()+i*7); return f; }
+function fechasDeSemana(i){ const l = lunesDe(i); return DIAS.map((_,j)=>{ const f=new Date(l); f.setDate(f.getDate()+j); return aTexto(f); }); }
+function minutosDe(fr){ const p = fr.split('-').map(s=>s.trim().replace(/\s/g,'')); const m=t=>{const[h,mm]=t.split(':').map(Number);return h*60+mm;}; return Math.max(0,m(p[1])-m(p[0])); }
+function yaPaso(fecha,franja){ const hm=horaInicioDe(franja); if(!hm) return false; const f=aFecha(fecha); f.setHours(hm[0],hm[1],0,0); return f.getTime()<Date.now(); }
+const NOMBRES_DIA = { 1:'Lunes', 2:'Martes', 3:'Miércoles', 4:'Jueves', 5:'Viernes' };
+
+/* Tutorías obligatorias vigentes en una fecha dada. */
+function obligatoriasEn(fecha){
+  const dia = aFecha(fecha).getDay();
+  if (dia < 1 || dia > 5) return [];
+  return (estado.obligatorias || []).filter(p =>
+    p.dias.indexOf(dia) !== -1 &&
+    fecha >= p.desde &&
+    (!p.hasta || fecha <= p.hasta));
+}
+
+/* Turnos que abarca un compromiso, según el orden de la lista de turnos. */
+function franjasDe(obligatoria){
+  const f = estado.config.franjas;
+  const desde = f.indexOf(obligatoria.franjaDesde);
+  const hasta = f.indexOf(obligatoria.franjaHasta);
+  if (desde === -1 || hasta === -1) return [];
+  return f.slice(Math.min(desde,hasta), Math.max(desde,hasta) + 1);
+}
+
+function obligatoriasEnCelda(fecha, franja){
+  return obligatoriasEn(fecha).filter(p => franjasDe(p).indexOf(franja) !== -1);
+}
+
+function semanaDe(fecha){ return Math.floor((aFecha(fecha)-aFecha(estado.config.fechaInicio))/604800000); }
+
+/* Muchas acciones devuelven, junto con su resultado, el estado ya actualizado.
+   Se guarda acá para que la recarga posterior no tenga que pedirlo de nuevo:
+   ahorra un viaje completo al servidor en cada edición. */
+let estadoPrecargado = null;
+
+async function pedir(datos){
+  if (API.indexOf('PEGAR_AQUI')===0) return { ok:false, error:'El panel todavía no está conectado a su hoja de cálculo.' };
+  try{
+    let respuesta;
+    if (datos.accion==='estado'){
+      const r = await fetch(API+'?accion=estado');
+      respuesta = await r.json();
+    } else {
+      const r = await fetch(API,{ method:'POST', body: JSON.stringify(Object.assign({clave, d: ENLACE_DOCENTE, g: agendaActual}, datos)) });
+      respuesta = await r.json();
+    }
+    if (respuesta && respuesta.ok && respuesta.datos && datos.accion !== 'estadoPanel'){
+      estadoPrecargado = respuesta;
+    }
+    return respuesta;
+  }catch(err){ return { ok:false, error:'No se pudo conectar con la hoja de cálculo.' }; }
+}
+
+/* ---------- acceso ---------- */
+document.getElementById('btnEntrar').onclick = entrar;
+document.getElementById('clave').onkeydown = e => { if (e.key==='Enter') entrar(); };
+document.getElementById('btnSalir').onclick = () => { sessionStorage.removeItem('claveAgenda'); location.reload(); };
+
+async function entrar(){
+  clave = document.getElementById('clave').value;
+  const r = await pedir({ accion:'ingresarPanel' });
+  const error = document.getElementById('errorAcceso');
+  if (!r.ok){ error.textContent = r.error || 'Clave incorrecta.'; error.style.display=''; return; }
+  sessionStorage.setItem('claveAgenda', clave);
+  iniciar();
+}
+
+async function iniciar(){
+  document.getElementById('pantallaAcceso').style.display='none';
+  document.getElementById('aplicacion').style.display='';
+  await cargar();
+}
+
+async function cargar(){
+  let r;
+  if (estadoPrecargado){ r = estadoPrecargado; estadoPrecargado = null; }
+  else r = await pedir({ accion:'estadoPanel' });
+  if (!r.ok){ document.getElementById('vista').innerHTML='<p class="error">'+(r.error||'No se pudo cargar.')+'</p>'; return; }
+  gruposClase = r.gruposClase || [];
+  docentes = r.docentes || [];
+  if (r.rol) rol = r.rol;
+  if (r.nombre) nombreActor = r.nombre;
+  const soloAdmin = ['asignaturas','feriados','config'];
+  soloAdmin.forEach(v => {
+    const btn = document.querySelector('#pestanas button[data-vista="'+v+'"]');
+    if (btn) btn.style.display = esAdmin() ? '' : 'none';
+  });
+  if (!esAdmin() && soloAdmin.indexOf(vistaActual) !== -1) vistaActual = 'agenda';
+  document.getElementById('quienSoy').textContent = nombreActor
+    ? nombreActor + (esAdmin() ? '' : ' · acceso docente') : '';
+  document.getElementById('btnSalir').style.display = ENLACE_DOCENTE ? 'none' : '';
+  if (r.sinAgenda || !r.datos){
+    estado = null;
+    dibujarSelector();
+    document.getElementById('vista').innerHTML = vistaAgendas();
+    conectar();
+    return;
+  }
+  estado = r.datos;
+  correoGrupoClase = r.mailGrupoClase || '';
+  correosDeGrupos = r.correosDeGrupos || [];
+  dibujarSelector();
+  document.getElementById('eyebrow').textContent = estado.config.escuela+' · Grupo '+estado.config.grupo+' · '+estado.config.anio;
+  if (!semanaActual) semanaActual = semanaSugerida();
+  dibujar();
+}
+function semanaSugerida(){
+  for (let i=0;i<estado.config.semanas;i++){
+    const l = lunesDe(i), d = new Date(l); d.setDate(d.getDate()+6); d.setHours(23,59,59);
+    if (Date.now()<=d.getTime()) return i;
+  }
+  return estado.config.semanas-1;
+}
+
+document.querySelectorAll('#pestanas button').forEach(b => {
+  b.onclick = () => {
+    vistaActual = b.dataset.vista;
+    document.querySelectorAll('#pestanas button').forEach(x=>x.classList.remove('activa'));
+    b.classList.add('activa');
+    dibujar();
+  };
+});
+
+function dibujar(){
+  const destino = document.getElementById('vista');
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(estado.config.fechaInicio || '') && vistaActual !== 'config'){
+    destino.innerHTML = '<div class="tarjeta"><h2>Falta el primer lunes del período</h2>'
+      + '<p class="nota">Sin esa fecha no es posible construir la grilla. Complétela en la pestaña Configuración.</p></div>';
+    return;
+  }
+  if (vistaActual==='agenda') destino.innerHTML = vistaAgenda();
+  if (vistaActual==='asistencia') destino.innerHTML = vistaAsistencia();
+  if (vistaActual==='grupos') destino.innerHTML = vistaGrupos();
+  if (vistaActual==='feriados') destino.innerHTML = vistaFeriados();
+  if (vistaActual==='asignaturas') destino.innerHTML = vistaAsignaturas();
+  if (vistaActual==='comunicaciones') destino.innerHTML = vistaComunicaciones();
+  if (vistaActual==='sintesis') destino.innerHTML = vistaSintesis();
+  if (vistaActual==='config') destino.innerHTML = vistaConfig();
+  conectar();
+}
+
+/* ================= AGENDAS (GRUPOS DE CLASE) ================= */
+function dibujarSelector(){
+  const cont = document.getElementById('selectorAgenda');
+  document.getElementById('pestanas').style.display = estado ? '' : 'none';
+
+  if (!gruposClase.length){ cont.innerHTML = ''; return; }
+
+  cont.innerHTML = '<div class="barra-agenda">'
+    + '<button class="btn fantasma chico" data-accion="verAgendas">'+(esAdmin() ? 'Administrar agendas' : 'Mis agendas')+'</button>'
+    + (esAdmin() ? '<button class="btn fantasma chico" data-accion="verDocentes">Docentes</button>' : '')
+    + '</div>';
+}
+
+function vistaDocentes(){
+  let h = '<div class="tarjeta"><h2>Docentes</h2>'
+    + '<p class="nota">Cada docente ingresa con un enlace personal, sin clave ni códigos. El enlace lo identifica y le muestra únicamente las agendas que tenga asignadas. Puede consultar todo lo de esas agendas y registrar asistencias, observaciones y convocatorias, que quedan firmadas con su nombre.</p>';
+
+  const activos = docentes.filter(d => d.activo);
+  if (!activos.length){
+    h += '<p class="vacio">No hay docentes habilitados.</p>';
+  } else {
+    h += '<table class="datos"><thead><tr><th>Docente</th><th>Correo</th><th>Agendas</th><th></th></tr></thead><tbody>';
+    activos.forEach(d => {
+      const suyas = d.agendas.map(c => {
+        const x = gruposClase.find(y => y.codigo === c);
+        return x ? escapar(x.grupo) : c;
+      }).join(', ');
+      h += '<tr><td><strong>'+escapar(d.nombre)+'</strong></td>'
+        + '<td style="font-size:12.5px;color:var(--tinta-70)">'+escapar(d.correo)+'</td>'
+        + '<td style="font-size:12.5px">'+(suyas || '<span class="estado pendiente">Ninguna</span>')+'</td>'
+        + '<td style="text-align:right;white-space:nowrap">'
+        + '<button class="btn fantasma chico" data-accion="editarDocente" data-token="'+d.token+'">Editar</button> '
+        + '<button class="btn fantasma chico" data-accion="enviarEnlace" data-token="'+d.token+'">Enviar enlace</button>'
+        + '</td></tr>';
+    });
+    h += '</tbody></table>';
+  }
+
+  h += '<div class="acciones" style="justify-content:flex-start">'
+    + '<button class="btn" data-accion="editarDocente" data-token="">Agregar docente</button></div></div>';
+  return h;
+}
+
+function enlaceDeDocente(token){
+  return location.href.replace(/[^/]*$/, '') + 'panel.html?d=' + encodeURIComponent(token);
+}
+
+function abrirDocente(token){
+  const d = docentes.find(x => x.token === token);
+  abrirVentana('<h3>'+(d ? 'Editar docente' : 'Agregar docente')+'</h3>'
+    + '<p class="cuando-modal">Acceso por enlace personal</p>'
+    + '<div class="dos">'
+    + '<div><label for="dNombre">Nombre</label><input id="dNombre" value="'+escapar(d ? d.nombre : '')+'"></div>'
+    + '<div><label for="dCorreo">Correo</label><input id="dCorreo" type="email" value="'+escapar(d ? d.correo : '')+'"></div>'
+    + '</div>'
+    + '<label>Agendas a las que accede</label>'
+    + '<div style="display:flex;flex-direction:column;gap:7px;margin-top:5px">'
+    + gruposClase.map(x => '<label style="display:flex;gap:8px;align-items:center;font-weight:400;margin:0">'
+        + '<input type="checkbox" class="dAgenda" value="'+x.codigo+'" style="width:auto"'
+        + (d && d.agendas.indexOf(x.codigo) !== -1 ? ' checked' : '')+'> '
+        + escapar(x.grupo)+' · '+escapar(x.escuela)+' · '+x.anio+'</label>').join('')
+    + '</div>'
+    + (d ? '<label for="dEnlace">Enlace personal</label>'
+         + '<input id="dEnlace" readonly value="'+escapar(enlaceDeDocente(d.token))+'" style="font-family:\'IBM Plex Mono\',monospace;font-size:11.5px">'
+         + '<p class="ayuda">Quien tenga este enlace ingresa en nombre del docente. Si se filtra, regenérelo.</p>' : '')
+    + '<p class="error" id="errorDocente" style="display:none"></p>'
+    + '<div class="acciones">'
+    + '<button class="btn fantasma" id="cerrar">Cancelar</button>'
+    + (d ? '<button class="btn fantasma" id="regenerar">Regenerar enlace</button>'
+         + '<button class="btn peligro" id="quitar">Quitar acceso</button>' : '')
+    + '<button class="btn" id="confirmar">Guardar</button></div>');
+
+  document.getElementById('cerrar').onclick = cerrarVentana;
+  document.getElementById('confirmar').onclick = async e => {
+    e.target.disabled = true;
+    const r = await pedir({ accion:'guardarDocente', token: d ? d.token : '',
+      nombre: document.getElementById('dNombre').value.trim(),
+      correo: document.getElementById('dCorreo').value.trim(),
+      agendas: Array.from(document.querySelectorAll('.dAgenda')).filter(c => c.checked).map(c => c.value) });
+    if (!r.ok){ e.target.disabled=false; return mostrarError(document.getElementById('errorDocente'), r.error); }
+    cerrarVentana(); avisar('Docente guardado.'); estadoPrecargado = null; await cargar();
+    document.getElementById('vista').innerHTML = vistaDocentes(); conectar();
+  };
+
+  const regenerar = document.getElementById('regenerar');
+  if (regenerar) regenerar.onclick = async e => {
+    if (!confirm('¿Regenerar el enlace? El anterior dejará de funcionar de inmediato.')) return;
+    e.target.disabled = true;
+    const r = await pedir({ accion:'regenerarEnlace', token: d.token });
+    if (!r.ok){ e.target.disabled=false; return avisar(r.error, true); }
+    cerrarVentana(); avisar('Enlace regenerado. Envíeselo al docente.');
+    estadoPrecargado = null; await cargar();
+    document.getElementById('vista').innerHTML = vistaDocentes(); conectar();
+  };
+
+  const quitar = document.getElementById('quitar');
+  if (quitar) quitar.onclick = async e => {
+    if (!confirm('¿Quitar el acceso de '+d.nombre+'? Su enlace dejará de funcionar.')) return;
+    e.target.disabled = true;
+    const r = await pedir({ accion:'eliminarDocente', token: d.token });
+    if (!r.ok){ e.target.disabled=false; return avisar(r.error, true); }
+    cerrarVentana(); avisar('Acceso quitado.'); estadoPrecargado = null; await cargar();
+    document.getElementById('vista').innerHTML = vistaDocentes(); conectar();
+  };
+}
+
+async function mandarEnlace(token){
+  const d = docentes.find(x => x.token === token);
+  if (!d) return;
+  const r = await pedir({ accion:'enviarEnlace', token, enlace: enlaceDeDocente(token) });
+  if (!r.ok) return avisar(r.error, true);
+  if (r.avisoCorreo) return avisar('No se pudo enviar. ' + r.avisoCorreo, true);
+  avisar('Enlace enviado a ' + d.correo + '.');
+}
+
+function vistaAgendas(){
+  let h = '<div class="tarjeta"><h2>Agendas</h2>'
+    + '<p class="nota">Cada grupo de clase tiene su propia agenda, con sus turnos, su período, sus asignaturas y sus grupos de proyecto. El código que la identifica se arma con el año, la escuela y el código de grupo, y es lo que distingue el enlace que reciben los estudiantes.</p>';
+
+  if (!gruposClase.length){
+    h += '<div class="aviso"><strong>Todavía no hay ninguna agenda.</strong> Cree la primera para empezar a configurar.</div>';
+  } else {
+    h += '<table class="datos"><thead><tr><th>Grupo</th><th>Escuela</th><th>Año</th><th>Código</th><th>Estado</th><th></th></tr></thead><tbody>';
+    gruposClase.forEach(x => {
+      h += '<tr><td><strong>'+escapar(x.grupo)+'</strong>'+(x.carrera ? '<div class="ayuda">'+escapar(x.carrera)+'</div>' : '')+'</td>'
+        + '<td>'+escapar(x.escuela)+'</td><td>'+x.anio+'</td>'
+        + '<td style="font-family:\'IBM Plex Mono\',monospace;font-size:12px">'+x.codigo+'</td>'
+        + '<td>'+(x.archivado ? '<span class="estado">Archivada</span>' : '<span class="estado asistio">Vigente</span>')+'</td>'
+        + '<td style="text-align:right">'
+        + (esAdmin() ? '<button class="btn fantasma chico" data-accion="editarAgenda" data-codigo="'+x.codigo+'">Editar</button> ' : '')
+        + '<button class="btn fantasma chico" data-accion="usarAgenda" data-codigo="'+x.codigo+'">Trabajar en esta</button>'
+        + '</td></tr>';
+    });
+    h += '</tbody></table>';
+  }
+
+  h += '<div class="acciones" style="justify-content:flex-start">'
+    + (esAdmin() ? '<button class="btn" data-accion="editarAgenda" data-codigo="">Crear agenda</button>' : '')
+    + '</div></div>';
+  return h;
+}
+
+function abrirAgenda(codigo){
+  const a = gruposClase.find(x => x.codigo === codigo);
+  abrirVentana('<h3>'+(a ? 'Editar agenda' : 'Crear agenda')+'</h3>'
+    + '<p class="cuando-modal">El código se arma solo con estos tres datos</p>'
+    + '<div class="dos">'
+    + '<div><label for="aAnio">Año</label><input id="aAnio" inputmode="numeric" maxlength="4" value="'+(a ? a.anio : new Date().getFullYear())+'"></div>'
+    + '<div><label for="aEscuela">Escuela</label><input id="aEscuela" value="'+escapar(a ? a.escuela : '')+'" placeholder="ISCAB"></div>'
+    + '<div><label for="aGrupo">Código del grupo de clase</label><input id="aGrupo" value="'+escapar(a ? a.grupo : '')+'" placeholder="TA4"></div>'
+    + '<div><label for="aCarrera">Carrera</label><input id="aCarrera" value="'+escapar(a ? a.carrera : '')+'" placeholder="Tecnicatura en Administración"></div>'
+    + '</div>'
+    + (!a && gruposClase.length
+        ? '<label for="aCopiar">Copiar la configuración de</label>'
+          + '<select id="aCopiar"><option value="">No copiar: empezar de cero</option>'
+          + gruposClase.map(x => '<option value="'+x.codigo+'">'+escapar(x.grupo)+' · '+escapar(x.escuela)+' · '+x.anio+'</option>').join('')
+          + '</select>'
+          + '<p class="ayuda">Copia los turnos, el período y los feriados ya revisados. Los grupos de proyecto y las asignaturas se cargan aparte, porque son propios de cada grupo.</p>'
+        : '')
+    + '<p class="ayuda" id="vistaCodigo"></p>'
+    + '<p class="error" id="errorAgenda" style="display:none"></p>'
+    + '<div class="acciones"><button class="btn fantasma" id="cerrar">Cancelar</button>'
+    + (a && !a.archivado ? '<button class="btn peligro" id="archivar">Archivar</button>' : '')
+    + (a && a.archivado ? '<button class="btn fantasma" id="reactivar">Reactivar</button>' : '')
+    + '<button class="btn" id="confirmar">Guardar</button></div>');
+
+  const limpio = v => String(v||'').trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
+  const refrescar = () => {
+    document.getElementById('vistaCodigo').textContent = 'Código: '
+      + limpio(document.getElementById('aAnio').value) + '-'
+      + limpio(document.getElementById('aEscuela').value) + '-'
+      + limpio(document.getElementById('aGrupo').value);
+  };
+  ['aAnio','aEscuela','aGrupo'].forEach(id => { document.getElementById(id).oninput = refrescar; });
+  refrescar();
+
+  document.getElementById('cerrar').onclick = cerrarVentana;
+  document.getElementById('confirmar').onclick = async e => {
+    e.target.disabled = true;
+    const r = await pedir({ accion:'guardarGrupoClase', original: a ? a.codigo : '',
+      anio: document.getElementById('aAnio').value.trim(),
+      escuela: document.getElementById('aEscuela').value.trim(),
+      grupo: document.getElementById('aGrupo').value.trim(),
+      carrera: document.getElementById('aCarrera').value.trim(),
+      copiarDe: (document.getElementById('aCopiar') || {}).value || '',
+      archivado: a ? a.archivado : false });
+    if (!r.ok){ e.target.disabled=false; return mostrarError(document.getElementById('errorAgenda'), r.error); }
+    cerrarVentana();
+    agendaActual = r.codigo;
+    sessionStorage.setItem('agendaActual', agendaActual);
+    estadoPrecargado = null;
+    avisar('Agenda guardada.');
+    await cargar();
+  };
+
+  const archivar = document.getElementById('archivar');
+  if (archivar) archivar.onclick = async e => {
+    e.target.disabled = true;
+    const r = await pedir({ accion:'eliminarGrupoClase', codigo: a.codigo, archivar: true });
+    if (!r.ok){ e.target.disabled=false; return avisar(r.error, true); }
+    cerrarVentana(); avisar('Agenda archivada. Sigue siendo consultable.'); estadoPrecargado = null; await cargar();
+  };
+  const reactivar = document.getElementById('reactivar');
+  if (reactivar) reactivar.onclick = async e => {
+    e.target.disabled = true;
+    const r = await pedir({ accion:'eliminarGrupoClase', codigo: a.codigo, archivar: false });
+    if (!r.ok){ e.target.disabled=false; return avisar(r.error, true); }
+    cerrarVentana(); avisar('Agenda reactivada.'); estadoPrecargado = null; await cargar();
+  };
+}
+
+/* ================= AGENDA Y BLOQUEOS ================= */
+function situacion(fecha, franja){
+  const b = estado.bloqueos.find(x=>x.fecha===fecha && (x.franja==='TODO'||x.franja===franja));
+  if (b) return { tipo:'bloqueada', bloqueo:b };
+  const r0 = estado.reservas.find(x=>x.fecha===fecha && x.franja===franja);
+  if (!r0 && !asignaturasEn(fecha, franja).length){
+    return { tipo:'bloqueada', bloqueo:{ id:'', motivo:'Sin asignatura configurada' } };
+  }
+  const r = estado.reservas.find(x=>x.fecha===fecha && x.franja===franja);
+  if (r) return { tipo:'ocupada', reserva:r };
+  if (yaPaso(fecha,franja)) return { tipo:'pasada' };
+  return { tipo:'libre' };
+}
+
+function vistaAgenda(){
+  const fechas = fechasDeSemana(semanaActual);
+  let h = '<div class="tarjeta"><h2>Agenda de la semana</h2>'
+    + '<p class="nota">Seleccione cualquier celda para bloquearla, liberarla o convocar a un grupo. Si bloquea un horario con tutorías reservadas, el panel detalla cuáles se cancelarán antes de aplicar el cambio.</p>';
+
+  h += '<div class="semanas">'
+    + '<button class="flecha" id="anterior" '+(semanaActual===0?'disabled':'')+'>←</button><select id="selectorSemana">';
+  for (let i=0;i<estado.config.semanas;i++){
+    const f = fechasDeSemana(i);
+    h += '<option value="'+i+'"'+(i===semanaActual?' selected':'')+'>Semana '+(i+1)+' · '+legible(f[0])+' al '+legible(f[4])+'</option>';
+  }
+  h += '</select><button class="flecha" id="siguiente" '+(semanaActual>=estado.config.semanas-1?'disabled':'')+'>→</button>'
+    + '<button class="btn" id="bloquearRango">Bloquear jornadas</button></div>';
+
+  h += '<div style="overflow-x:auto"><table class="grilla"><thead><tr><th class="hora">Horario</th>';
+  DIAS.forEach((d,i)=>{ h += '<th>'+d+'<span class="fecha">'+legible(fechas[i])+'</span></th>'; });
+  h += '</tr></thead><tbody>';
+
+  estado.config.franjas.forEach(franja => {
+    h += '<tr><td class="hora">'+franja+'</td>';
+    fechas.forEach(fecha => {
+      const s = situacion(fecha, franja);
+      const enSala = obligatoriasEnCelda(fecha, franja);
+      let contenido = '', datos = 'data-fecha="'+fecha+'" data-franja="'+franja+'"';
+      if (s.tipo==='ocupada'){
+        const marca = s.reserva.convocatoria
+          ? 'Convocatoria' + (s.reserva.estado !== 'reservada' ? ' · ' + etiquetaEstado(s.reserva.estado) : '')
+          : etiquetaEstado(s.reserva.estado);
+        contenido = '<span class="etiqueta">'+marca+'</span>'+escapar(s.reserva.grupo);
+        datos += ' data-accion="reserva" data-id="'+s.reserva.id+'"';
+      } else if (s.tipo==='bloqueada'){
+        contenido = '<span class="etiqueta">Bloqueada</span>'+escapar(s.bloqueo.motivo);
+        datos += ' data-accion="desbloquear" data-id="'+s.bloqueo.id+'"';
+      } else {
+        contenido = '<span class="etiqueta">'+(s.tipo==='libre'?'Libre':'Pasada')+'</span>Bloquear';
+        datos += ' data-accion="bloquear"';
+      }
+      const materias = asignaturasEn(fecha, franja);
+      if (materias.length){
+        contenido += '<span class="materias">'
+          + materias.map(m => '<i class="materia">'+escapar(m.nombre)+'</i>').join('') + '</span>';
+      }
+      if (enSala.length){
+        contenido += '<span class="obligatorias">'
+          + enSala.map(p => '<i class="obl">'+escapar(p.grupo)+'</i>').join('') + '</span>';
+      }
+      h += '<td class="'+s.tipo+'"><button class="celda" '+datos+'>'+contenido+'</button></td>';
+    });
+    h += '</tr>';
+  });
+  h += '</tbody></table></div></div>';
+  return h;
+}
+
+function etiquetaEstado(e){
+  return { reservada:'Reservada', asistio:'Asistió', ausente:'No asistió' }[e]||e;
+}
+
+/* ================= ASISTENCIA ================= */
+/* El turno ya comenzó: recién entonces puede registrarse la asistencia. */
+/* Toma las primeras dos cifras:dos cifras del turno como hora de inicio, sin
+   asumir qué separador se usó entre el inicio y el fin (guion normal, guion
+   largo pegado por autocorrección, etc.). */
+function horaInicioDe(franja){
+  const m = String(franja).match(/(\d{1,2}):(\d{2})/);
+  return m ? [Number(m[1]), Number(m[2])] : null;
+}
+
+function turnoComenzado(fecha, franja){
+  const hm = horaInicioDe(franja);
+  if (!hm) return false;
+  const f = aFecha(fecha); f.setHours(hm[0], hm[1], 0, 0);
+  return f.getTime() <= Date.now();
+}
+
+function asistenciaObligatoriaDe(grupo, fecha){
+  return (estado.asistencias || []).find(x => x.grupo === grupo && x.fecha === fecha);
+}
+
+/* Las obligatorias abarcan varios turnos pero se registran una vez por jornada:
+   la marca se muestra en el primer turno de su rango. */
+function asignaturasEn(fecha, franja){
+  const dia = aFecha(fecha).getDay();
+  return (estado.asignaturas || []).filter(a =>
+    a.dias.indexOf(dia) !== -1 && franjasDe(a).indexOf(franja) !== -1);
+}
+
+function obligatoriasQueEmpiezanEn(fecha, franja){
+  return obligatoriasEn(fecha).filter(o => franjasDe(o)[0] === franja);
+}
+
+/* Dos botones visibles y rotulados. El que está activo queda relleno; al volver a
+   pulsarlo, el registro vuelve a quedar sin marcar. Nada que adivinar. */
+/**
+ * El botón nunca se deshabilita: un botón "disabled" no dispara evento de clic
+ * en el navegador, así que tocarlo no produce ningún efecto ni ningún aviso.
+ * En su lugar, siempre responde; si el turno todavía no comenzó, el aviso lo
+ * explica en el momento del clic, en vez de quedar en silencio.
+ */
+function botonesAsistencia(actual, habilitado, datos){
+  const opciones = [['si','Asistió','asistio'], ['no','No asistió','ausente']];
+  return '<span class="marcas">' + opciones.map(o =>
+    '<button class="marca '+o[0]+(actual === o[2] ? ' activa' : '')+(habilitado ? '' : ' futura')+'"'
+    + ' data-habilitado="'+(habilitado?'1':'0')+'"'
+    + ' data-valor="'+o[2]+'" '+datos+'>'+o[1]+'</button>').join('') + '</span>';
+}
+
+function pendientesDeLaSemana(){
+  let n = 0;
+  fechasDeSemana(semanaActual).forEach(fecha => {
+    estado.config.franjas.forEach(franja => {
+      if (!turnoComenzado(fecha, franja)) return;
+      const r = estado.reservas.find(x => x.fecha === fecha && x.franja === franja);
+      if (r && r.estado === 'reservada') n++;
+      obligatoriasQueEmpiezanEn(fecha, franja).forEach(o => {
+        if (!asistenciaObligatoriaDe(o.grupo, fecha)) n++;
+      });
+    });
+  });
+  return n;
+}
+
+function vistaAsistencia(){
+  const fechas = fechasDeSemana(semanaActual);
+  const pendientes = pendientesDeLaSemana();
+
+  let h = '<div class="tarjeta"><h2>Registro de asistencia</h2>'
+    + '<p class="nota">Cada marca cambia con un clic: sin registrar, asistió, no asistió. La asistencia puede registrarse a partir del comienzo del turno. El ícono de observaciones permite incorporar comentarios sobre la instancia.</p>';
+
+  h += (pendientes
+    ? '<div class="aviso"><strong>'+pendientes+' instancia(s) sin registrar en esta semana.</strong></div>'
+    : '<div class="aviso" style="background:var(--libre-suave);border-left-color:var(--libre)">No hay registros pendientes en esta semana.</div>');
+
+  h += '<div class="semanas">'
+    + '<button class="flecha" id="anterior" '+(semanaActual===0?'disabled':'')+'>←</button><select id="selectorSemana">';
+  for (let i = 0; i < estado.config.semanas; i++){
+    const f = fechasDeSemana(i);
+    h += '<option value="'+i+'"'+(i===semanaActual?' selected':'')+'>Semana '+(i+1)+' · '+legible(f[0])+' al '+legible(f[4])+'</option>';
+  }
+  h += '</select><button class="flecha" id="siguiente" '+(semanaActual>=estado.config.semanas-1?'disabled':'')+'>→</button></div>';
+
+  h += '<div style="overflow-x:auto"><table class="grilla"><thead><tr><th class="hora">Horario</th>';
+  DIAS.forEach((d,i) => { h += '<th>'+d+'<span class="fecha">'+legible(fechas[i])+'</span></th>'; });
+  h += '</tr></thead><tbody>';
+
+  estado.config.franjas.forEach(franja => {
+    h += '<tr><td class="hora">'+franja+'</td>';
+    fechas.forEach(fecha => {
+      const habilitado = turnoComenzado(fecha, franja);
+      const tut = estado.reservas.find(x => x.fecha === fecha && x.franja === franja);
+      const obls = obligatoriasQueEmpiezanEn(fecha, franja);
+      let cuerpo = '';
+
+      obls.forEach(o => {
+        const reg = asistenciaObligatoriaDe(o.grupo, fecha);
+        const actual = reg ? (reg.estado === 'presente' ? 'asistio' : 'ausente') : '';
+        cuerpo += '<div class="instancia">'
+          + '<span class="quien">'+escapar(o.grupo)+' <em>obligatoria</em></span>'
+          + botonesAsistencia(actual, habilitado,
+              'data-accion="marcarObligatoria" data-grupo="'+escapar(o.grupo)+'" data-fecha="'+fecha+'"')
+          + '<button class="obs'+(reg && reg.notas ? ' con-texto' : '')+'" title="Observaciones"'
+          + ' data-accion="obsObligatoria" data-grupo="'+escapar(o.grupo)+'" data-fecha="'+fecha+'">✎</button>'
+          + '</div>';
+      });
+
+      if (tut){
+        const actual = (tut.estado === 'asistio' || tut.estado === 'ausente') ? tut.estado : '';
+        cuerpo += '<div class="instancia">'
+          + '<span class="quien">'+escapar(tut.grupo)+(tut.convocatoria ? ' <em>convocatoria</em>' : '')+'</span>'
+          + botonesAsistencia(actual, habilitado, 'data-accion="marcarTutoria" data-id="'+tut.id+'"')
+          + '<button class="obs'+(tut.notas ? ' con-texto' : '')+'" title="Observaciones"'
+          + ' data-accion="obsTutoria" data-id="'+tut.id+'">✎</button>'
+          + '</div>';
+      }
+
+      h += '<td class="'+(cuerpo ? 'con-instancias' : 'vacia')+'">'+(cuerpo || '<span class="sin-nada">—</span>')+'</td>';
+    });
+    h += '</tr>';
+  });
+  h += '</tbody></table></div></div>';
+  return h;
+}
+
+/* El cambio se dibuja al instante y se guarda en segundo plano: la respuesta del
+   servidor tarda unos segundos y esperarla hacía que el clic pareciera no surtir
+   efecto. Si el guardado falla, se avisa y se recarga el estado real. */
+async function marcarTutoria(id, valor){
+  const r = estado.reservas.find(x => x.id === id);
+  if (!r) return;
+  const anterior = r.estado;
+  const nuevo = (r.estado === valor) ? 'reservada' : valor;
+  r.estado = nuevo;
+  dibujar();
+  const resp = await pedir({ accion:'marcarAsistencia', id, estado:nuevo });
+  if (!resp.ok){ r.estado = anterior; dibujar(); avisar(resp.error || 'No se pudo guardar.', true); return; }
+  avisar(nuevo === 'reservada' ? 'Registro quitado.' : 'Asistencia registrada y confirmada.');
+}
+
+async function marcarObligatoria(grupo, fecha, valor){
+  estado.asistencias = estado.asistencias || [];
+  const reg = asistenciaObligatoriaDe(grupo, fecha);
+  const actual = reg ? (reg.estado === 'presente' ? 'asistio' : 'ausente') : '';
+  const quitar = actual === valor;
+  const nuevo = quitar ? '' : (valor === 'asistio' ? 'presente' : 'ausente');
+
+  const copia = estado.asistencias.slice();
+  if (quitar) estado.asistencias = estado.asistencias.filter(x => !(x.grupo === grupo && x.fecha === fecha));
+  else if (reg) reg.estado = nuevo;
+  else estado.asistencias.push({ grupo, fecha, estado:nuevo, notas:'' });
+  dibujar();
+
+  const resp = await pedir({ accion:'registrarAsistenciaObligatoria', grupo, fecha, estado:nuevo });
+  if (!resp.ok){ estado.asistencias = copia; dibujar(); avisar(resp.error || 'No se pudo guardar.', true); return; }
+}
+
+function abrirObservacionTutoria(id){
+  const r = estado.reservas.find(x => x.id === id);
+  if (!r) return;
+  abrirVentana('<h3>'+escapar(r.grupo)+'</h3>'
+    + '<p class="cuando-modal">Tutoría · '+legible(r.fecha)+' · '+r.franja+'</p>'
+    + (r.tema ? '<p style="font-size:14px"><strong>Tema:</strong> '+escapar(r.tema)+'</p>' : '')
+    + (r.integrantes ? '<p style="font-size:14px"><strong>Asisten:</strong> '+escapar(r.integrantes)+'</p>' : '')
+    + '<label for="obsTexto">Observaciones de la instancia</label>'
+    + '<textarea id="obsTexto" placeholder="Estado de avance, dificultades, acuerdos alcanzados, pendientes para la próxima instancia.">'+escapar(r.notas)+'</textarea>'
+    + '<p class="ayuda">Visibles para el equipo docente; los estudiantes no acceden a ellas.'
+    + (r.autorNota ? ' Última anotación de ' + escapar(r.autorNota) + '.' : '')+'</p>'
+    + '<div class="acciones"><button class="btn fantasma" id="cerrar">Cerrar</button>'
+    + '<button class="btn" id="guardar">Guardar observaciones</button></div>');
+  document.getElementById('cerrar').onclick = cerrarVentana;
+  document.getElementById('guardar').onclick = async e => {
+    e.target.disabled = true;
+    const resp = await pedir({ accion:'guardarNota', id, notas: document.getElementById('obsTexto').value });
+    if (!resp.ok){ e.target.disabled=false; return avisar(resp.error, true); }
+    cerrarVentana(); avisar('Observaciones guardadas.'); await cargar();
+  };
+}
+
+function abrirObservacionObligatoria(grupo, fecha){
+  const reg = asistenciaObligatoriaDe(grupo, fecha) || { estado:'', notas:'' };
+  abrirVentana('<h3>'+escapar(grupo)+'</h3>'
+    + '<p class="cuando-modal">Tutoría obligatoria · '+NOMBRES_DIA[aFecha(fecha).getDay()]+' '+legible(fecha)+'</p>'
+    + '<label for="obsTexto">Observaciones de la instancia</label>'
+    + '<textarea id="obsTexto" placeholder="Estado de avance observado, dificultades, acuerdos, justificación de la inasistencia.">'+escapar(reg.notas)+'</textarea>'
+    + '<p class="ayuda">Visibles para el equipo docente; los estudiantes no acceden a ellas.'
+    + (reg.autor ? ' Última anotación de ' + escapar(reg.autor) + '.' : '')+'</p>'
+    + '<div class="acciones"><button class="btn fantasma" id="cerrar">Cerrar</button>'
+    + '<button class="btn" id="guardar">Guardar observaciones</button></div>');
+  document.getElementById('cerrar').onclick = cerrarVentana;
+  document.getElementById('guardar').onclick = async e => {
+    e.target.disabled = true;
+    const resp = await pedir({ accion:'registrarAsistenciaObligatoria', grupo, fecha,
+                               estado: reg.estado || 'presente', notas: document.getElementById('obsTexto').value });
+    if (!resp.ok){ e.target.disabled=false; return avisar(resp.error, true); }
+    cerrarVentana(); avisar('Observaciones guardadas.'); await cargar();
+  };
+}
+
+/* ================= GRUPOS Y TUTORÍAS OBLIGATORIAS ================= */
+function vistaGrupos(){
+  let h = '<div class="tarjeta"><h2>Grupos de proyecto</h2>'
+    + '<p class="nota">Cada grupo define su propio código de cuatro cifras y su dirección de correo la primera vez que ingresa. Si extravían el código, reinícielo y el grupo podrá definir uno nuevo. La dirección la corrige el propio grupo desde la agenda.</p>'
+    + '<table class="datos"><thead><tr><th>Grupo</th><th>Código de acceso</th><th>Correo</th><th></th></tr></thead><tbody>';
+
+  estado.grupos.forEach(g => {
+    const correo = (correosDeGrupos.find(x => x.grupo === g.nombre) || {}).correo || '';
+    h += '<tr><td>'+escapar(g.nombre)+'</td>'
+      + '<td>'+(g.tieneCodigo
+          ? '<span class="estado asistio">Definido</span>'+(esAdmin() ? ' <button class="btn fantasma chico" data-accion="reiniciar" data-grupo="'+escapar(g.nombre)+'">Reiniciar</button>' : '')
+          : '<span class="estado pendiente">Sin definir</span>')+'</td>'
+      + '<td style="font-size:12.5px;color:var(--tinta-70)">'+(correo ? escapar(correo) : '<span class="estado pendiente">Sin registrar</span>')+'</td>'
+      + '<td style="text-align:right">'+(esAdmin() ? '<button class="btn fantasma chico" data-accion="editarGrupo" data-grupo="'+escapar(g.nombre)+'">Editar</button>' : '')+'</td></tr>';
+  });
+  h += '</tbody></table>'
+    + '<div class="acciones" style="justify-content:flex-start">'+(esAdmin() ? '<button class="btn" data-accion="editarGrupo" data-grupo="">Agregar grupo</button>' : '')+'</div></div>';
+
+  const obligatorias = estado.obligatorias || [];
+  h += '<div class="tarjeta"><h2>Tutorías obligatorias</h2>'
+    + '<p class="nota">Régimen obligatorio para los grupos que lo requieran: días de la semana y turnos en que deben encontrarse trabajando en sala, sin necesidad de agendar. No ocupa el horario: es posible atender una tutoría agendada de otro grupo en simultáneo. Cada régimen tiene su propia vigencia, de modo que un grupo puede incorporarse o dejarlo en cualquier momento sin alterar los registros anteriores.</p>';
+
+  if (!obligatorias.length){
+    h += '<p class="vacio">No hay tutorías obligatorias registradas.</p>';
+  } else {
+    h += '<table class="datos"><thead><tr><th>Grupo</th><th>Días</th><th>Horario</th><th>Vigencia</th><th></th></tr></thead><tbody>';
+    obligatorias.forEach(p => {
+      const vigente = (!p.hasta || aTexto(new Date()) <= p.hasta) && aTexto(new Date()) >= p.desde;
+      h += '<tr><td><strong>'+escapar(p.grupo)+'</strong></td>'
+        + '<td>'+p.dias.map(d => NOMBRES_DIA[d]).join(', ')+'</td>'
+        + '<td style="font-family:\'IBM Plex Mono\',monospace;font-size:12.5px">'
+        + p.franjaDesde.split(' - ')[0]+' a '+p.franjaHasta.split(' - ')[1]+'</td>'
+        + '<td>'+legible(p.desde)+(p.hasta ? ' al '+legible(p.hasta) : ' en adelante')
+        + (vigente ? '' : ' <span class="estado">No vigente</span>')+'</td>'
+        + '<td style="text-align:right">'+(esAdmin() ? '<button class="btn fantasma chico" data-accion="editarObligatoria" data-id="'+p.id+'">Editar</button>' : '')+'</td></tr>';
+    });
+    h += '</tbody></table>';
+  }
+
+  h += '<div class="acciones" style="justify-content:flex-start">'+(esAdmin() ? '<button class="btn" data-accion="editarObligatoria" data-id="">Registrar tutoría obligatoria</button>' : '')+'</div></div>';
+  return h;
+}
+
+function abrirGrupo(nombre){
+  const g = estado.grupos.find(x => x.nombre === nombre);
+  abrirVentana('<h3>'+(g ? 'Editar grupo' : 'Agregar grupo')+'</h3>'
+    + '<label for="gNombre">Denominación del grupo de proyecto</label>'
+    + '<input id="gNombre" value="'+escapar(g ? g.nombre : '')+'">'
+    + (g ? '<p class="ayuda">Las tutorías obligatorias se administran en la sección siguiente de esta misma pestaña.</p>' : '')
+    + '<p class="error" id="errorGrupo" style="display:none"></p>'
+    + '<div class="acciones"><button class="btn fantasma" id="cerrar">Cancelar</button>'
+    + (g ? '<button class="btn peligro" id="eliminar">Quitar</button>' : '')
+    + '<button class="btn" id="confirmar">Guardar</button></div>');
+
+  document.getElementById('cerrar').onclick = cerrarVentana;
+  document.getElementById('confirmar').onclick = async e => {
+    const nuevo = document.getElementById('gNombre').value.trim();
+    if (!nuevo) return mostrarError(document.getElementById('errorGrupo'), 'Indique una denominación.');
+    e.target.disabled = true;
+    const r = await pedir({ accion:'guardarGrupo', original: g ? g.nombre : '', nombre:nuevo });
+    if (!r.ok){ e.target.disabled=false; return mostrarError(document.getElementById('errorGrupo'), r.error); }
+    cerrarVentana(); avisar('Grupo guardado.'); await cargar();
+  };
+
+  const eliminar = document.getElementById('eliminar');
+  if (eliminar) eliminar.onclick = async e => {
+    if (!confirm('¿Confirma que desea quitar el grupo '+g.nombre+'? Sus tutorías quedan registradas.')) return;
+    e.target.disabled = true;
+    const r = await pedir({ accion:'eliminarGrupo', nombre:g.nombre });
+    if (!r.ok){ e.target.disabled=false; return avisar(r.error, true); }
+    cerrarVentana(); avisar('Grupo quitado.'); await cargar();
+  };
+}
+
+function abrirObligatoria(id){
+  const p = (estado.obligatorias || []).find(x => x.id === id);
+  const turnos = estado.config.franjas;
+  const opcionesTurno = (sel) => turnos.map(f => '<option value="'+f+'"'+(f===sel?' selected':'')+'>'+f+'</option>').join('');
+  const grupos = estado.grupos.map(g => '<option value="'+escapar(g.nombre)+'"'+(p && p.grupo===g.nombre?' selected':'')+'>'+escapar(g.nombre)+'</option>').join('');
+
+  abrirVentana('<h3>'+(p ? 'Editar tutoría obligatoria' : 'Registrar tutoría obligatoria')+'</h3>'
+    + '<p class="cuando-modal">Tutorías obligatorias</p>'
+    + '<label for="pGrupo">Grupo de proyecto</label><select id="pGrupo">'+grupos+'</select>'
+    + '<label>Días de la semana</label><div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:4px">'
+    + [1,2,3,4,5].map(d => '<label style="display:flex;gap:6px;align-items:center;font-weight:400;margin:0">'
+        + '<input type="checkbox" class="pDia" value="'+d+'" style="width:auto"'+(p && p.dias.indexOf(d)!==-1?' checked':'')+'> '+NOMBRES_DIA[d]+'</label>').join('')
+    + '</div>'
+    + '<div class="dos">'
+    + '<div><label for="pDesdeT">Desde el turno</label><select id="pDesdeT">'+opcionesTurno(p ? p.franjaDesde : turnos[0])+'</select></div>'
+    + '<div><label for="pHastaT">Hasta el turno</label><select id="pHastaT">'+opcionesTurno(p ? p.franjaHasta : turnos[turnos.length-1])+'</select></div>'
+    + '<div><label for="pDesde">Rige desde</label><input id="pDesde" type="date" value="'+(p ? p.desde : estado.config.fechaInicio)+'"></div>'
+    + '<div><label for="pHasta">Hasta (opcional)</label><input id="pHasta" type="date" value="'+(p && p.hasta ? p.hasta : '')+'">'
+    + '<p class="ayuda">Deje el campo vacío si rige hasta el fin del período.</p></div>'
+    + '</div>'
+    + '<p class="error" id="errorObligatoria" style="display:none"></p>'
+    + '<div class="acciones"><button class="btn fantasma" id="cerrar">Cancelar</button>'
+    + (p ? '<button class="btn peligro" id="eliminar">Quitar compromiso</button>' : '')
+    + '<button class="btn" id="confirmar">Guardar</button></div>');
+
+  document.getElementById('cerrar').onclick = cerrarVentana;
+  document.getElementById('confirmar').onclick = async e => {
+    const dias = Array.from(document.querySelectorAll('.pDia')).filter(c => c.checked).map(c => Number(c.value));
+    e.target.disabled = true;
+    const r = await pedir({
+      accion:'guardarObligatoria', id: p ? p.id : '',
+      grupo: document.getElementById('pGrupo').value, dias,
+      franjaDesde: document.getElementById('pDesdeT').value,
+      franjaHasta: document.getElementById('pHastaT').value,
+      desde: document.getElementById('pDesde').value,
+      hasta: document.getElementById('pHasta').value
+    });
+    if (!r.ok){ e.target.disabled=false; return mostrarError(document.getElementById('errorObligatoria'), r.error); }
+    cerrarVentana(); avisar('Tutoría obligatoria registrada.'); await cargar();
+  };
+
+  const eliminar = document.getElementById('eliminar');
+  if (eliminar) eliminar.onclick = async e => {
+    e.target.disabled = true;
+    const r = await pedir({ accion:'eliminarObligatoria', id: p.id });
+    if (!r.ok){ e.target.disabled=false; return avisar(r.error, true); }
+    cerrarVentana(); avisar('Tutoría obligatoria quitada. Los registros de asistencia se conservan.'); await cargar();
+  };
+}
+
+/* ================= ASIGNATURAS ================= */
+function turnosAsignados(a){
+  return a.dias.length * franjasDe(a).length;
+}
+
+/* Los turnos se cuentan sumando todos los horarios de esa asignatura. */
+function turnosDeLaAsignatura(nombre){
+  return (estado.asignaturas || [])
+    .filter(a => a.nombre === nombre)
+    .reduce((total, a) => total + turnosAsignados(a), 0);
+}
+
+function vistaAsignaturas(){
+  const asignaturas = estado.asignaturas || [];
+  const verificadas = estado.config.asignaturasVerificadas;
+
+  let h = '';
+
+  h += '<div class="tarjeta" style="border-color:'+(verificadas?'var(--border)':'var(--ambar)')+'">'
+    + '<h2>Verificación de horarios</h2>'
+    + (verificadas
+        ? '<p class="nota" style="color:var(--libre)">Los horarios de las asignaturas fueron verificados para el período vigente.</p>'
+        : '<div class="aviso"><strong>Verifique los horarios de las asignaturas antes de abrir la agenda.</strong> '
+          + 'Los estudiantes eligen cuándo asistir según qué asignaturas están presentes: un error en esta configuración se traslada directamente a ellos.</div>'
+          + '<div class="acciones" style="justify-content:flex-start"><button class="btn" data-accion="verificarAsignaturas">Horarios verificados</button></div>')
+    + '</div>';
+
+  h += '<div class="tarjeta"><h2>Asignaturas presentes en tutoría</h2>'
+    + '<p class="nota">Días y turnos en que cada asignatura está presente. Los estudiantes lo ven al elegir horario. La lista se conserva de un período al siguiente.</p>';
+
+  if (!asignaturas.length){
+    h += '<p class="vacio">No hay asignaturas cargadas.</p>';
+  } else {
+    const nombres = [];
+    asignaturas.forEach(a => { if (nombres.indexOf(a.nombre) === -1) nombres.push(a.nombre); });
+
+    h += '<div style="overflow-x:auto"><table class="datos"><thead><tr><th>Asignatura</th><th>Días</th><th>Horario</th>'
+      + '<th class="num">Turnos</th><th></th></tr></thead><tbody>';
+
+    nombres.forEach(nombre => {
+      const horarios = asignaturas.filter(a => a.nombre === nombre);
+      const horas = horarios[0].horas;
+      const total = turnosDeLaAsignatura(nombre);
+      const completa = !horas || total === horas;
+
+      horarios.forEach((a, i) => {
+        h += '<tr>'
+          + (i === 0
+              ? '<td rowspan="'+horarios.length+'"><strong>'+escapar(nombre)+'</strong></td>'
+              : '')
+          + '<td style="color:var(--tinta-70)">'+(a.dias.length ? a.dias.map(d => NOMBRES_DIA[d]).join(', ') : '<span class="estado pendiente">Sin asignar</span>')+'</td>'
+          + '<td style="font-family:\'IBM Plex Mono\',monospace;font-size:12.5px">'
+          + (a.franjaDesde ? a.franjaDesde.split(' - ')[0]+' a '+a.franjaHasta.split(' - ')[1] : '—')+'</td>'
+          + (i === 0
+              ? '<td class="num" rowspan="'+horarios.length+'"><span class="'+(completa?'cumple':'no-cumple')+'">'+total+(horas ? ' de '+horas : '')+'</span></td>'
+              : '')
+          + '<td style="text-align:right;white-space:nowrap">'
+          + '<button class="btn fantasma chico" data-accion="editarAsignatura" data-id="'+a.id+'">Editar</button>'
+          + (esAdmin() && i === horarios.length - 1
+              ? ' <button class="btn fantasma chico" data-accion="agregarHorario" data-nombre="'+escapar(nombre)+'" data-horas="'+horas+'">+ horario</button>'
+              : '')
+          + '</td></tr>';
+      });
+    });
+    h += '</tbody></table></div>'
+      + '<p class="ayuda">Una asignatura puede tener varios horarios: por ejemplo lunes de 18 a 20 y miércoles de 20 a 22. Se agregan con «+ horario». La columna Turnos suma todos los horarios de la asignatura y los compara con sus horas semanales; en rojo, cuando no coinciden.</p>';
+  }
+
+  h += '<div class="acciones" style="justify-content:flex-start">'
+    + (esAdmin() ? '<button class="btn" data-accion="editarAsignatura" data-id="">Agregar asignatura</button>' : '')
+    + '</div></div>';
+
+  h += '<div class="tarjeta"><h2>Carga rápida</h2>'
+    + '<p class="nota">Incorpora las denominaciones y las horas semanales de una carrera. Los días y turnos se completan después, porque varían de un grupo a otro.</p>'
+    + '<div class="acciones" style="justify-content:flex-start">'
+    + '<button class="btn fantasma" data-accion="catalogo" data-carrera="Tecnicatura en Administración">Tecnicatura en Administración</button>'
+    + '<button class="btn fantasma" data-accion="catalogo" data-carrera="Tecnicatura en Gestión Humana">Tecnicatura en Gestión Humana</button>'
+    + '</div></div>';
+
+  h += '<div class="tarjeta"><h2>Traslado entre instalaciones</h2>'
+    + '<p class="nota">La configuración de asignaturas se copia de una instalación a otra sin volver a escribirla.</p>'
+    + '<div class="acciones" style="justify-content:flex-start">'
+    + '<button class="btn fantasma" data-accion="exportarAsignaturas">Copiar configuración</button>'
+    + '<button class="btn fantasma" data-accion="importarAsignaturas">Pegar configuración</button>'
+    + '</div></div>';
+
+  return h;
+}
+
+function abrirAsignatura(id, nombreFijo, horasFijas){
+  const a = id ? (estado.asignaturas || []).find(x => x.id === id) : null;
+  const nombre = a ? a.nombre : (nombreFijo || '');
+  const horas = a ? a.horas : Number(horasFijas || 0);
+  const turnos = estado.config.franjas;
+  const opciones = sel => turnos.map(f => '<option value="'+f+'"'+(f===sel?' selected':'')+'>'+f+'</option>').join('');
+
+  abrirVentana('<h3>'+(a ? 'Editar horario' : (nombreFijo ? 'Agregar horario' : 'Agregar asignatura'))+'</h3>'
+    + '<p class="cuando-modal">'+(nombreFijo ? escapar(nombreFijo)+' · nuevo horario de presencia' : 'Presencia en el espacio de tutoría')+'</p>'
+    + '<div class="dos">'
+    + '<div><label for="aNombre">Denominación</label><input id="aNombre" value="'+escapar(nombre)+'"'+(nombreFijo ? ' readonly' : '')+'></div>'
+    + '<div><label for="aHoras">Horas semanales</label><input id="aHoras" type="number" min="0" max="40" value="'+horas+'"></div>'
+    + '</div>'
+    + '<label>Días de presencia</label><div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:4px">'
+    + [1,2,3,4,5].map(d => '<label style="display:flex;gap:6px;align-items:center;font-weight:400;margin:0">'
+        + '<input type="checkbox" class="aDia" value="'+d+'" style="width:auto"'+(a && a.dias.indexOf(d)!==-1?' checked':'')+'> '+NOMBRES_DIA[d]+'</label>').join('')
+    + '</div>'
+    + '<div class="dos">'
+    + '<div><label for="aDesde">Desde el turno</label><select id="aDesde">'+opciones(a ? a.franjaDesde : turnos[0])+'</select></div>'
+    + '<div><label for="aHasta">Hasta el turno</label><select id="aHasta">'+opciones(a ? a.franjaHasta : turnos[0])+'</select></div>'
+    + '</div>'
+    + '<p class="error" id="errorAsignatura" style="display:none"></p>'
+    + '<div class="acciones"><button class="btn fantasma" id="cerrar">Cancelar</button>'
+    + (a ? '<button class="btn peligro" id="eliminar">Quitar</button>' : '')
+    + '<button class="btn" id="confirmar">Guardar</button></div>');
+
+  document.getElementById('cerrar').onclick = cerrarVentana;
+  document.getElementById('confirmar').onclick = async e => {
+    const dias = Array.from(document.querySelectorAll('.aDia')).filter(c => c.checked).map(c => Number(c.value));
+    e.target.disabled = true;
+    const r = await pedir({
+      accion:'guardarAsignatura', id: a ? a.id : '',
+      nombre: document.getElementById('aNombre').value.trim(),
+      horas: Number(document.getElementById('aHoras').value || 0), dias,
+      franjaDesde: document.getElementById('aDesde').value,
+      franjaHasta: document.getElementById('aHasta').value
+    });
+    if (!r.ok){ e.target.disabled=false; return mostrarError(document.getElementById('errorAsignatura'), r.error); }
+    cerrarVentana();
+    avisar(r.sinCobertura
+      ? 'Asignatura guardada. ' + r.sinCobertura + ' tutoría(s) quedaron sin asignatura presente: se cancelaron y se avisó a los grupos para que reagenden.'
+      : 'Asignatura guardada.');
+    await cargar();
+  };
+
+  const eliminar = document.getElementById('eliminar');
+  if (eliminar) eliminar.onclick = async e => {
+    e.target.disabled = true;
+    const r = await pedir({ accion:'eliminarAsignatura', id:a.id });
+    if (!r.ok){ e.target.disabled=false; return avisar(r.error, true); }
+    cerrarVentana();
+    avisar(r.sinCobertura
+      ? 'Horario quitado. ' + r.sinCobertura + ' tutoría(s) quedaron sin asignatura presente: se cancelaron y se avisó a los grupos.'
+      : 'Horario quitado.');
+    await cargar();
+  };
+}
+
+async function cargarCatalogo(carrera){
+  const r = await pedir({ accion:'cargarCatalogo', carrera });
+  if (!r.ok) return avisar(r.error, true);
+  avisar(r.agregadas ? 'Se incorporaron ' + r.agregadas + ' asignatura(s). Complete sus días y turnos.' : 'Ya estaban todas cargadas.');
+  await cargar();
+}
+
+async function verificarAsignaturas(){
+  const r = await pedir({ accion:'guardarConfig', valores:{ asignaturas_verificadas: estado.config.fechaInicio } });
+  if (!r.ok) return avisar(r.error, true);
+  avisar('Horarios dados por verificados.');
+  await cargar();
+}
+
+function exportarAsignaturas(){
+  const texto = JSON.stringify(estado.asignaturas || []);
+  abrirVentana('<h3>Copiar configuración</h3>'
+    + '<p class="cuando-modal">Traslado a otra instalación</p>'
+    + '<p style="font-size:13.5px">Copie este texto y péguelo en la otra instalación, con el botón Pegar configuración.</p>'
+    + '<textarea id="exportado" style="min-height:120px;font-family:\'IBM Plex Mono\',monospace;font-size:11.5px">'+escapar(texto)+'</textarea>'
+    + '<div class="acciones"><button class="btn fantasma" id="cerrar">Cerrar</button>'
+    + '<button class="btn" id="copiar">Copiar al portapapeles</button></div>');
+  document.getElementById('cerrar').onclick = cerrarVentana;
+  document.getElementById('copiar').onclick = () => {
+    const campo = document.getElementById('exportado');
+    campo.select();
+    try { document.execCommand('copy'); avisar('Configuración copiada.'); } catch (err) { avisar('Copie el texto manualmente.', true); }
+  };
+}
+
+function importarAsignaturas(){
+  abrirVentana('<h3>Pegar configuración</h3>'
+    + '<p class="cuando-modal">Traslado desde otra instalación</p>'
+    + '<label for="pegado">Texto copiado de la otra instalación</label>'
+    + '<textarea id="pegado" style="min-height:120px;font-family:\'IBM Plex Mono\',monospace;font-size:11.5px"></textarea>'
+    + '<p class="ayuda">Las asignaturas que ya existan no se duplican.</p>'
+    + '<p class="error" id="errorImportar" style="display:none"></p>'
+    + '<div class="acciones"><button class="btn fantasma" id="cerrar">Cancelar</button>'
+    + '<button class="btn" id="confirmar">Incorporar</button></div>');
+  document.getElementById('cerrar').onclick = cerrarVentana;
+  document.getElementById('confirmar').onclick = async e => {
+    e.target.disabled = true;
+    const r = await pedir({ accion:'importarAsignaturas', datos: document.getElementById('pegado').value.trim() });
+    if (!r.ok){ e.target.disabled=false; return mostrarError(document.getElementById('errorImportar'), r.error); }
+    cerrarVentana(); avisar('Se incorporaron ' + r.agregadas + ' asignatura(s).'); await cargar();
+  };
+}
+
+/* ================= COMUNICACIONES ================= */
+
+/* Junta las observaciones de tutorías y de tutorías obligatorias en una sola lista. */
+function comentariosTodos(){
+  const lista = [];
+  estado.reservas.filter(r => r.notas).forEach(r => lista.push({
+    grupo: r.grupo, fecha: r.fecha, autor: r.autorNota || '', notas: r.notas, tipo: 'Tutoría'
+  }));
+  (estado.asistencias || []).filter(x => x.notas).forEach(x => lista.push({
+    grupo: x.grupo, fecha: x.fecha, autor: x.autor || '', notas: x.notas, tipo: 'Tutoría obligatoria'
+  }));
+  return lista;
+}
+
+function tablaComentarios(lista){
+  let h = '<table class="datos"><thead><tr>'
+    + '<th>Proyecto</th><th>Registrado por</th><th>Comentario</th></tr></thead><tbody>';
+  lista.forEach(c => {
+    h += '<tr><td style="width:170px"><strong>'+escapar(c.grupo)+'</strong>'
+      + '<div class="ayuda">'+escapar(c.tipo)+' · '+legible(c.fecha)+'</div></td>'
+      + '<td style="width:150px">'+(c.autor ? escapar(c.autor) : '<span style="color:var(--tinta-45)">Sin registrar</span>')+'</td>'
+      + '<td>'+escapar(c.notas)+'</td></tr>';
+  });
+  h += '</tbody></table>';
+  return h;
+}
+
+let vistaComProyecto = null;
+let vistaComFecha = '';
+
+function vistaComunicaciones(){
+  const todos = comentariosTodos();
+
+  let h = '<div class="tarjeta"><h2>Comunicaciones</h2>'
+    + '<p class="nota">Observaciones agregadas por el equipo docente en la pestaña de asistencia de cada grupo. Visibles solo para el equipo docente.</p>'
+    + '<div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin:14px 0">'
+    + '<div><label for="comFecha" style="display:block;font-size:12.5px;margin-bottom:4px;color:var(--tinta-45)">Filtrar por fecha</label>'
+    + '<input type="date" id="comFecha" value="'+escapar(vistaComFecha)+'"></div>'
+    + (vistaComFecha ? '<button class="btn fantasma chico" data-accion="comQuitarFecha">Quitar filtro de fecha</button>' : '')
+    + '</div>';
+
+  if (!todos.length) return h + '<p class="vacio">Aún no se agregó ninguna observación.</p></div>';
+
+  if (vistaComFecha){
+    const filtrados = todos.filter(c => c.fecha === vistaComFecha).sort((a,b) => a.grupo.localeCompare(b.grupo));
+    h += '<p class="nota">'+(filtrados.length ? filtrados.length+' comentario'+(filtrados.length===1?'':'s') : 'Ningún comentario')+' del '+legible(vistaComFecha)+'.</p>';
+    if (filtrados.length) h += tablaComentarios(filtrados);
+    return h + '</div>';
+  }
+
+  if (vistaComProyecto){
+    const filtrados = todos.filter(c => c.grupo === vistaComProyecto).sort((a,b) => b.fecha.localeCompare(a.fecha));
+    h += '<button class="btn fantasma chico" data-accion="comVolver" style="margin-bottom:12px">← Todos los proyectos</button>'
+      + '<h3 style="margin:0 0 10px">'+escapar(vistaComProyecto)+'</h3>'
+      + tablaComentarios(filtrados);
+    return h + '</div>';
+  }
+
+  const porProyecto = {};
+  todos.forEach(c => { porProyecto[c.grupo] = (porProyecto[c.grupo] || 0) + 1; });
+  const proyectos = Object.keys(porProyecto).sort();
+
+  h += '<p class="nota">Elija un proyecto para ver sus comentarios.</p>'
+    + '<div style="display:flex;flex-wrap:wrap;gap:8px">';
+  proyectos.forEach(p => {
+    h += '<button class="btn fantasma" data-accion="comProyecto" data-grupo="'+escapar(p)+'">'
+      + escapar(p) + ' <span style="color:var(--tinta-45)">('+porProyecto[p]+')</span></button>';
+  });
+  h += '</div></div>';
+  return h;
+}
+
+/* ================= FERIADOS ================= */
+function aniosDelPeriodo(){
+  const anios = new Set();
+  for (let i = 0; i < estado.config.semanas; i++){
+    const f = fechasDeSemana(i);
+    anios.add(f[0].slice(0,4)); anios.add(f[4].slice(0,4));
+  }
+  return Array.from(anios).sort();
+}
+
+function vistaFeriados(){
+  const feriados = estado.feriados || [];
+  const anios = aniosDelPeriodo();
+  const faltantes = anios.filter(a => !feriados.some(f => f.fecha.indexOf(a) === 0));
+
+  let h = '<div class="tarjeta"><h2>Feriados y días sin actividad</h2>'
+    + '<p class="nota">Los días incluidos en esta lista quedan bloqueados en la agenda, con su denominación como motivo. Pueden editarse, quitarse o agregarse libremente: comprenden también jornadas institucionales o aniversarios de la escuela.</p>';
+
+  if (faltantes.length){
+    h += '<div class="aviso"><strong>El período abarca ' + faltantes.join(' y ') + ' y no hay feriados cargados para ' + (faltantes.length > 1 ? 'esos años' : 'ese año') + '.</strong> '
+      + 'Es posible generarlos automáticamente y verificarlos posteriormente contra el calendario oficial.</div>'
+      + '<div class="acciones" style="justify-content:flex-start">'
+      + faltantes.map(a => '<button class="btn" data-accion="generarFeriados" data-anio="'+a+'">Cargar feriados del nuevo período ('+a+')</button>').join('')
+      + '</div>';
+  }
+
+  if (feriados.some(f => f.provisorio)){
+    h += '<div class="aviso"><strong>Hay feriados provisorios.</strong> Fueron calculados según la norma vigente, que puede variar; prevalece el calendario oficial. Corresponde verificarlos y confirmarlos: al editar uno, deja de ser provisorio.</div>';
+  }
+
+  if (!feriados.length){
+    h += '<p class="vacio">No hay feriados cargados.</p>';
+  } else {
+    h += '<table class="datos"><thead><tr><th>Fecha</th><th>Nombre</th><th>Estado</th><th></th></tr></thead><tbody>';
+    feriados.forEach(f => {
+      h += '<tr><td style="font-family:\'IBM Plex Mono\',monospace">'+f.fecha+'</td>'
+        + '<td>'+escapar(f.nombre)+'</td>'
+        + '<td>'+(f.provisorio ? '<span class="estado pendiente">Provisorio</span>' : '<span class="estado asistio">Confirmado</span>')+'</td>'
+        + '<td style="text-align:right">'+(esAdmin() ? '<button class="btn fantasma chico" data-accion="editarFeriado" data-fecha="'+f.fecha+'">Editar</button>' : '')+'</td></tr>';
+    });
+    h += '</tbody></table>';
+  }
+
+  h += '<div class="acciones" style="justify-content:flex-start">'+(esAdmin() ? '<button class="btn" data-accion="editarFeriado" data-fecha="">Agregar jornada</button>' : '')+'</div></div>';
+  return h;
+}
+
+function abrirFeriado(fecha){
+  const f = (estado.feriados || []).find(x => x.fecha === fecha);
+  abrirVentana('<h3>'+(f ? 'Editar jornada' : 'Agregar jornada')+'</h3>'
+    + '<p class="cuando-modal">Feriado, jornada institucional o día sin actividad académica</p>'
+    + '<label for="fFecha">Fecha</label><input id="fFecha" type="date" value="'+(f ? f.fecha : '')+'">'
+    + '<label for="fNombre">Nombre</label><input id="fNombre" value="'+escapar(f ? f.nombre : '')+'" placeholder="Por ejemplo: Aniversario de la escuela">'
+    + (f && f.provisorio ? '<p class="ayuda">Al guardarlo, quedará confirmado.</p>' : '')
+    + '<p class="error" id="errorFeriado" style="display:none"></p>'
+    + '<div class="acciones"><button class="btn fantasma" id="cerrar">Cancelar</button>'
+    + (f ? '<button class="btn peligro" id="eliminar">Quitar</button>' : '')
+    + '<button class="btn" id="confirmar">Guardar</button></div>');
+
+  document.getElementById('cerrar').onclick = cerrarVentana;
+  document.getElementById('confirmar').onclick = async e => {
+    const nueva = document.getElementById('fFecha').value;
+    const nombre = document.getElementById('fNombre').value.trim();
+    if (!nueva || !nombre) return mostrarError(document.getElementById('errorFeriado'), 'Complete la fecha y la denominación.');
+    e.target.disabled = true;
+    const r = await pedir({ accion:'guardarFeriado', fecha:nueva, nombre, original: f ? f.fecha : '' });
+    if (!r.ok){ e.target.disabled=false; return mostrarError(document.getElementById('errorFeriado'), r.error); }
+    cerrarVentana(); avisar('Jornada guardada.'); await cargar();
+  };
+
+  const eliminar = document.getElementById('eliminar');
+  if (eliminar) eliminar.onclick = async e => {
+    e.target.disabled = true;
+    const r = await pedir({ accion:'eliminarFeriado', fecha:f.fecha });
+    if (!r.ok){ e.target.disabled=false; return avisar(r.error, true); }
+    cerrarVentana(); avisar('Jornada quitada.'); await cargar();
+  };
+}
+
+async function generarFeriados(anio){
+  const r = await pedir({ accion:'generarFeriados', anio });
+  if (!r.ok) return avisar(r.error, true);
+  avisar('Se incorporaron ' + r.agregados + ' día(s) para ' + anio + '. Corresponde verificarlos contra el calendario oficial.');
+  await cargar();
+}
+
+/* ================= SÍNTESIS ================= */
+/* Días hábiles del período cuya última franja ya transcurrió. */
+function jornadasTranscurridas(){
+  const dias = [];
+  const ultima = estado.config.franjas[estado.config.franjas.length - 1];
+  if (!ultima) return dias;
+  for (let i = 0; i < estado.config.semanas; i++){
+    fechasDeSemana(i).forEach(f => { if (yaPaso(f, ultima)) dias.push(f); });
+  }
+  return dias;
+}
+
+function resumenPorGrupo(){
+  const jornadas = jornadasTranscurridas();
+
+  return estado.grupos.map(g => {
+    const suyas = estado.reservas.filter(r => r.grupo === g.nombre);
+    const asistidas = suyas.filter(r => r.estado === 'asistio');
+    const ausencias = suyas.filter(r => r.estado === 'ausente');
+    const convocatorias = suyas.filter(r => r.convocatoria);
+    const minutos = asistidas.reduce((t, r) => t + minutosDe(r.franja), 0);
+
+    const porSemana = {};
+    suyas.forEach(r => { const s = semanaDe(r.fecha); porSemana[s] = (porSemana[s] || 0) + 1; });
+    const semanasConMasDeUna = Object.keys(porSemana).filter(k => porSemana[k] > 1).length;
+
+    /* Tutorías obligatorias: jornadas en que correspondía asistir y qué se registró. */
+    let esperadas = 0, presentes = 0, faltas = 0, sinRegistrar = 0;
+    jornadas.forEach(f => {
+      if (!obligatoriasEn(f).some(p => p.grupo === g.nombre)) return;
+      esperadas++;
+      const reg = asistenciaObligatoriaDe(g.nombre, f);
+      if (!reg) sinRegistrar++;
+      else if (reg.estado === 'presente') presentes++;
+      else faltas++;
+    });
+
+    return {
+      grupo: g, reservadas: suyas.length, asistidas: asistidas.length, ausencias: ausencias.length,
+      convocatorias: convocatorias.length, horas: (minutos / 60), semanasConMasDeUna,
+      esperadas, presentes, faltas, sinRegistrar
+    };
+  });
+}
+
+function totalReservas(){ return estado.reservas.length; }
+
+function vistaSintesis(){
+  const filas = resumenPorGrupo();
+  const total = totalReservas();
+
+  let h = '<div class="tarjeta"><h2>Síntesis de actuación por grupo</h2>'
+    + '<p class="nota">Acumulado del período. Las horas contabilizan únicamente las tutorías registradas como asistidas. Las columnas de concentración de agenda conviene interpretarlas junto con la asistencia y las inasistencias: una frecuencia elevada puede responder tanto a un uso desmedido del recurso como a un grupo que requiere mayor acompañamiento.</p>'
+    + '<div style="overflow-x:auto"><table class="datos"><thead><tr>'
+    + '<th>Grupo</th><th class="num">Tutorías</th><th class="num">Asistió</th><th class="num">Inasist.</th>'
+    + '<th class="num">Horas</th><th class="num">Convocatorias</th>'
+    + '<th class="num">Sem. con más de una</th><th class="num">% del total</th>'
+    + '<th>Tutorías obligatorias</th></tr></thead><tbody>';
+
+  filas.forEach(f => {
+    let obligatoria = '<span style="color:var(--tinta-45)">Sin régimen obligatorio</span>';
+    if (f.esperadas){
+      const cumple = f.faltas === 0;
+      obligatoria = '<span class="'+(cumple ? 'cumple' : 'no-cumple')+'">'+f.presentes+' de '+f.esperadas+' jornadas</span>'
+        + (f.sinRegistrar ? '<div class="ayuda">'+f.sinRegistrar+' sin registrar</div>' : '');
+    }
+    h += '<tr><td><strong>'+escapar(f.grupo.nombre)+'</strong></td>'
+      + '<td class="num">'+f.reservadas+'</td><td class="num">'+f.asistidas+'</td>'
+      + '<td class="num">'+(f.ausencias || '—')+'</td><td class="num">'+f.horas.toFixed(1).replace('.0','')+'</td>'
+      + '<td class="num">'+(f.convocatorias || '—')+'</td>'
+      + '<td class="num">'+(f.semanasConMasDeUna || '—')+'</td>'
+      + '<td class="num">'+(f.reservadas ? Math.round(f.reservadas * 100 / total)+'%' : '—')+'</td>'
+      + '<td>'+obligatoria+'</td></tr>';
+  });
+  h += '</tbody></table></div>'
+    + '<div class="acciones" style="justify-content:flex-start">'
+    + '<button class="btn" data-accion="exportar">Descargar respaldo de tutorías</button>'
+    + '<button class="btn fantasma" data-accion="exportarAsistenciaObligatoria">Descargar asistencia obligatoria</button>'
+    + '<button class="btn fantasma" data-accion="exportarSintesis">Descargar síntesis</button></div>'
+    + '<p class="ayuda">Se recomienda descargar el respaldo periódicamente y conservarlo fuera de la planilla.</p></div>';
+
+  const comentarios = comentariosTodos();
+  if (comentarios.length){
+    const porProyecto = {};
+    comentarios.forEach(c => { porProyecto[c.grupo] = (porProyecto[c.grupo] || 0) + 1; });
+    const proyectos = Object.keys(porProyecto).sort();
+
+    h += '<div class="tarjeta"><h2>Comentarios por proyecto</h2>'
+      + '<p class="nota">Cantidad de observaciones registradas por el equipo docente. El detalle de cada una está en la pestaña Comunicaciones.</p>'
+      + '<table class="datos"><thead><tr><th>Proyecto</th><th class="num">Comentarios</th></tr></thead><tbody>';
+    proyectos.forEach(p => {
+      h += '<tr><td>'+escapar(p)+'</td><td class="num">'+porProyecto[p]+'</td></tr>';
+    });
+    h += '</tbody></table></div>';
+  }
+  return h;
+}
+
+/* ================= CONFIGURACIÓN ================= */
+function vistaConfig(){
+  const c = estado.config;
+
+  const requisitos = [
+    ['Turnos de tutoría definidos', c.franjas.length > 0],
+    ['Asignaturas con días y turnos asignados', (estado.asignaturas||[]).length > 0 && (estado.asignaturas||[]).every(a => a.dias.length > 0)],
+    ['Grupos de proyecto cargados', estado.grupos.length > 0],
+    ['Período definido (primer lunes y cantidad de semanas)', !!c.fechaInicio && c.semanas > 0],
+    ['Correo del grupo de clase cargado', c.mailConfigurado],
+    ['Clave del panel cambiada', !c.clavePorDefecto]
+  ];
+  const completo = requisitos.every(r => r[1]);
+
+  let h = '<div class="tarjeta"><h2>Apertura de la agenda</h2>'
+    + '<p class="nota">Mientras la agenda permanezca cerrada, los estudiantes visualizan un aviso y no pueden reservar. La apertura queda a su criterio.</p>'
+    + '<ul class="lista-control">'
+    + requisitos.map(r => '<li><span class="marca '+(r[1]?'si':'no')+'">'+(r[1]?'✓':'○')+'</span>'+r[0]+'</li>').join('')
+    + '</ul>';
+
+  if (c.agendaAbierta){
+    h += '<p style="font-size:14px"><strong>La agenda está abierta.</strong> Los estudiantes pueden reservar.</p>'
+      + '<div class="acciones" style="justify-content:flex-start"><button class="btn peligro" data-accion="cerrarAgenda">Cerrar la agenda</button></div>';
+  } else {
+    h += '<p style="font-size:14px"><strong>La agenda está cerrada.</strong></p>'
+      + '<div class="acciones" style="justify-content:flex-start"><button class="btn" data-accion="abrirAgenda" '+(completo?'':'disabled')+'>Abrir la agenda</button></div>'
+      + (completo ? '' : '<p class="ayuda">Restan completar los puntos señalados.</p>');
+  }
+  h += '</div>';
+
+  const enlace = location.href.replace(/[^/]*$/, '') + 'agenda.html?g=' + encodeURIComponent(c.codigo);
+  h += '<div class="tarjeta"><h2>Enlace para los estudiantes</h2>'
+    + '<p class="nota">Este es el enlace propio de esta agenda. Repártalo únicamente a los estudiantes de '+escapar(c.grupo)+'.</p>'
+    + '<input id="enlaceAgenda" readonly value="'+escapar(enlace)+'" style="font-family:\'IBM Plex Mono\',monospace;font-size:12px">'
+    + '<div class="acciones" style="justify-content:flex-start"><button class="btn" data-accion="copiarEnlace">Copiar enlace</button></div></div>';
+
+  h += '<div class="tarjeta"><h2>Avisos por correo</h2>'
+    + '<p class="nota">Controla si el sistema envía correos a los grupos (reservas, cancelaciones, cambios de horario, convocatorias) o si queda en silencio. Afecta a <strong>todas las agendas de esta instalación</strong>, no solo a esta. Con los avisos apagados, todo sigue funcionando igual: solo no sale correo.</p>'
+    + '<label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="cAvisarPorMail" style="width:auto"'+(c.avisarPorMail?' checked':'')+'> Enviar avisos por correo</label>'
+    + '<div class="acciones" style="justify-content:flex-start"><button class="btn fantasma" data-accion="guardarAvisoMail">Guardar</button></div></div>';
+
+  h += '<div class="tarjeta"><h2>Datos de esta agenda</h2>'
+    + '<p class="nota">Año, escuela y código de grupo se modifican desde Administrar agendas: forman el código '
+    + '<strong style="font-family:\'IBM Plex Mono\',monospace">'+escapar(c.codigo)+'</strong>.</p>'
+    + '<div class="dos">'
+    + '<div><label for="cMail">Correo de respaldo del docente</label><input id="cMail" type="email" value="'+escapar(correoGrupoClase)+'" placeholder="recibe copia de lo que se envía">'
+    + '<p class="ayuda">Recibe copia de cada comunicación que el sistema envía a los grupos.</p></div>'
+    + '<div><label for="cClave">Clave del panel</label><input id="cClave" type="text" placeholder="dejar vacío para conservarla">'
+    + (c.clavePorDefecto ? '<p class="ayuda" style="color:var(--alerta)">Se mantiene la clave inicial. Se recomienda modificarla.</p>' : '')+'</div>'
+    + '<div><label for="cInicio">Primer lunes del período</label><input id="cInicio" type="date" value="'+c.fechaInicio+'"></div>'
+    + '<div><label for="cSemanas">Cantidad de semanas</label><input id="cSemanas" type="number" min="1" max="52" value="'+c.semanas+'"></div>'
+    + '</div>'
+    + '<div class="acciones" style="justify-content:flex-start"><button class="btn" data-accion="guardarConfig">Guardar cambios</button></div>'
+    + '<p class="error" id="errorConfig" style="display:none"></p></div>';
+
+  h += '<div class="tarjeta"><h2>Turnos de tutoría</h2>'
+    + '<p class="nota">Cada turno se define por su hora de comienzo y de finalización. Rigen para todos los días de la semana.</p>'
+    + '<div id="turnos">' + c.franjas.map((f,i)=>filaTurno(f,i)).join('') + '</div>'
+    + '<div class="acciones" style="justify-content:flex-start">'
+    + '<button class="btn fantasma" data-accion="agregarTurno">Agregar turno</button>'
+    + '<button class="btn" data-accion="guardarFranjas">Guardar turnos</button></div>'
+    + '<p class="ayuda">Si modifica el horario de un turno con tutorías reservadas, dichas tutorías se conservan y se ajustan al nuevo horario, con aviso por correo. Si elimina un turno con tutorías reservadas, el panel detalla cuáles se cancelarán antes de aplicar el cambio.</p>'
+    + '<p class="error" id="errorFranjas" style="display:none"></p></div>';
+
+  h += '<div class="tarjeta"><h2>Aviso a los estudiantes</h2>'
+    + '<p class="nota">Este mensaje se despliega automáticamente cuando un grupo reserva una segunda tutoría en la misma semana. No impide la reserva y no es desactivable.</p>'
+    + '<blockquote style="margin:0;padding:12px 15px;background:var(--papel);border-left:3px solid var(--tinta);font-size:14px">'
+    + 'Por favor, recuerde agendar tutorías con sentido de responsabilidad y compañerismo, teniendo en consideración las necesidades que otros grupos puedan tener. Muchas gracias'
+    + '</blockquote></div>';
+
+  return h;
+}
+
+function filaTurno(franja, indice){
+  const partes = String(franja||'').split(' - ');
+  const desde = (partes[0]||'').trim(), hasta = (partes[1]||'').trim();
+  return '<div class="turno" data-original="'+escapar(franja||'')+'">'
+    + '<span>Desde</span><input type="time" class="desde" value="'+desde+'">'
+    + '<span>hasta</span><input type="time" class="hasta" value="'+hasta+'">'
+    + '<button class="quitar" title="Quitar turno" data-accion="quitarTurno">×</button></div>';
+}
+
+async function guardarAvisoMail(){
+  const valor = document.getElementById('cAvisarPorMail').checked ? 'SI' : 'NO';
+  const r = await pedir({ accion:'guardarConfig', valores:{ avisar_por_mail: valor } });
+  if (!r.ok) return avisar(r.error || 'No se pudo guardar.', true);
+  avisar(valor === 'SI' ? 'Avisos por correo activados.' : 'Avisos por correo desactivados.');
+  await cargar();
+}
+
+async function guardarConfig(){
+  const valores = {
+    fecha_inicio: document.getElementById('cInicio').value,
+    semanas: document.getElementById('cSemanas').value,
+    mail_respaldo: document.getElementById('cMail').value.trim()
+  };
+  const nuevaClave = document.getElementById('cClave').value.trim();
+  if (nuevaClave) valores.clave_panel = nuevaClave;
+
+  const r = await pedir({ accion:'guardarConfig', valores });
+  if (!r.ok){ avisar(r.error || 'No se pudo guardar.', true); return mostrarError(document.getElementById('errorConfig'), r.error); }
+  if (nuevaClave){ clave = nuevaClave; sessionStorage.setItem('claveAgenda', nuevaClave); }
+  avisar('Cambios guardados.');
+  await cargar();
+}
+
+function leerTurnos(){
+  return Array.from(document.querySelectorAll('#turnos .turno')).map(fila => ({
+    anterior: fila.dataset.original || '',
+    actual: (fila.querySelector('.desde').value || '') + ' - ' + (fila.querySelector('.hasta').value || '')
+  }));
+}
+
+async function guardarFranjas(confirmado){
+  const franjas = leerTurnos();
+  if (franjas.some(f => f.actual.indexOf(':') === -1 || f.actual.trim() === '-')){
+    avisar('Existen turnos sin completar.', true);
+    return mostrarError(document.getElementById('errorFranjas'), 'Todos los turnos requieren hora de comienzo y de finalización.');
+  }
+
+  const r = await pedir({ accion:'guardarFranjas', franjas, confirmado: !!confirmado });
+
+  if (r.requiereConfirmacion){
+    const lista = r.afectadas.map(a=>'<li>'+escapar(a.grupo)+' — '+legible(a.fecha)+', '+a.franja+'</li>').join('');
+    abrirVentana('<h3>Hay tutorías en los turnos eliminados</h3>'
+      + '<p class="cuando-modal">Se cancelarán al guardar los cambios</p>'
+      + '<ul style="font-size:13.5px;padding-left:18px;margin:0">'+lista+'</ul>'
+      + '<div class="aviso">Se remitirá un correo al grupo de clase con las disculpas correspondientes, solicitando que vuelvan a agendarse.</div>'
+      + '<div class="acciones"><button class="btn fantasma" id="cerrar">Volver</button>'
+      + '<button class="btn peligro" id="confirmar">Cancelar '+r.afectadas.length+' y guardar</button></div>');
+    document.getElementById('cerrar').onclick = cerrarVentana;
+    document.getElementById('confirmar').onclick = () => { cerrarVentana(); guardarFranjas(true); };
+    return;
+  }
+  if (!r.ok){ avisar(r.error || 'No se pudo guardar.', true); return mostrarError(document.getElementById('errorFranjas'), r.error); }
+
+  let mensaje = 'Turnos guardados.';
+  if (r.ajustadas) mensaje += ' Se ajustaron ' + r.ajustadas + ' tutoría(s) al horario nuevo y se avisó por correo.';
+  if (r.canceladas) mensaje += ' Se cancelaron ' + r.canceladas + ' tutoría(s) y se avisó por correo.';
+  avisar(mensaje);
+  await cargar();
+}
+
+async function alternarApertura(abrir){
+  const r = await pedir({ accion:'guardarConfig', valores:{ agenda_abierta: abrir ? 'SI' : 'NO' } });
+  if (!r.ok) return avisar(r.error || 'No se pudo cambiar.', true);
+  avisar(abrir ? 'La agenda quedó abierta para los estudiantes.' : 'La agenda quedó cerrada.');
+  await cargar();
+}
+
+/* ================= EVENTOS ================= */
+function conectar(){
+  const a = document.getElementById('anterior'), s = document.getElementById('siguiente'), sel = document.getElementById('selectorSemana');
+  if (a) a.onclick = ()=>{ semanaActual--; dibujar(); };
+  if (s) s.onclick = ()=>{ semanaActual++; dibujar(); };
+  if (sel) sel.onchange = e=>{ semanaActual = Number(e.target.value); dibujar(); };
+  const br = document.getElementById('bloquearRango');
+  if (br) br.onclick = abrirBloqueoRango;
+
+  const comFecha = document.getElementById('comFecha');
+  if (comFecha) comFecha.onchange = e => { vistaComFecha = e.target.value; vistaComProyecto = null; dibujar(); };
+
+  document.querySelectorAll('[data-accion]').forEach(el => {
+    el.onclick = () => {
+     try {
+      const d = el.dataset;
+      if (d.accion==='comProyecto'){ vistaComProyecto = d.grupo; dibujar(); }
+      if (d.accion==='comVolver'){ vistaComProyecto = null; dibujar(); }
+      if (d.accion==='comQuitarFecha'){ vistaComFecha = ''; dibujar(); }
+      if (d.accion==='bloquear') abrirCeldaLibre(d.fecha, d.franja);
+      if (d.accion==='desbloquear'){
+        if (d.id) abrirDesbloqueo(d.id, d.fecha, d.franja);
+        else avisar('Ese horario no tiene ninguna asignatura configurada. Asígnela en la pestaña Asignaturas.', true);
+      }
+      if (d.accion==='reserva') abrirReserva(d.id);
+      if (d.accion==='marcarTutoria'){
+        if (d.habilitado === '0') avisar('Ese turno todavía no comenzó. Podrá registrar la asistencia a partir de su horario de inicio.', true);
+        else marcarTutoria(d.id, d.valor);
+      }
+      if (d.accion==='marcarObligatoria'){
+        if (d.habilitado === '0') avisar('Ese turno todavía no comenzó. Podrá registrar la asistencia a partir de su horario de inicio.', true);
+        else marcarObligatoria(d.grupo, d.fecha, d.valor);
+      }
+      if (d.accion==='obsTutoria') abrirObservacionTutoria(d.id);
+      if (d.accion==='obsObligatoria') abrirObservacionObligatoria(d.grupo, d.fecha);
+      if (d.accion==='editarGrupo') abrirGrupo(d.grupo);
+      if (d.accion==='editarObligatoria') abrirObligatoria(d.id);
+      if (d.accion==='reiniciar') reiniciarCodigo(d.grupo);
+      if (d.accion==='guardarConfig') guardarConfig();
+      if (d.accion==='guardarFranjas') guardarFranjas(false);
+      if (d.accion==='guardarAvisoMail') guardarAvisoMail();
+      if (d.accion==='abrirAgenda') alternarApertura(true);
+      if (d.accion==='cerrarAgenda') alternarApertura(false);
+      if (d.accion==='agregarTurno'){
+        document.getElementById('turnos').insertAdjacentHTML('beforeend', filaTurno('', 0));
+        conectar();
+      }
+      if (d.accion==='quitarTurno'){ el.closest('.turno').remove(); }
+      if (d.accion==='editarFeriado') abrirFeriado(d.fecha);
+      if (d.accion==='generarFeriados') generarFeriados(d.anio);
+      if (d.accion==='editarAsignatura') abrirAsignatura(d.id);
+      if (d.accion==='agregarHorario') abrirAsignatura('', d.nombre, d.horas);
+      if (d.accion==='catalogo') cargarCatalogo(d.carrera);
+      if (d.accion==='verificarAsignaturas') verificarAsignaturas();
+      if (d.accion==='exportarAsignaturas') exportarAsignaturas();
+      if (d.accion==='importarAsignaturas') importarAsignaturas();
+      if (d.accion==='editarAgenda') abrirAgenda(d.codigo);
+      if (d.accion==='copiarEnlace'){
+        const campo = document.getElementById('enlaceAgenda');
+        campo.select();
+        try { document.execCommand('copy'); avisar('Enlace copiado.'); }
+        catch (err) { avisar('Copie el enlace manualmente.', true); }
+      }
+      if (d.accion==='editarDocente') abrirDocente(d.token);
+      if (d.accion==='enviarEnlace') mandarEnlace(d.token);
+      if (d.accion==='verDocentes'){ estado = null; document.getElementById('vista').innerHTML = vistaDocentes(); dibujarSelector(); conectar(); }
+      if (d.accion==='verAgendas'){ estado = null; document.getElementById('vista').innerHTML = vistaAgendas(); dibujarSelector(); conectar(); }
+      if (d.accion==='usarAgenda'){
+        agendaActual = d.codigo; sessionStorage.setItem('agendaActual', agendaActual);
+        estadoPrecargado = null; cargar();
+      }
+      if (d.accion==='exportar') exportarReservas();
+      if (d.accion==='exportarSintesis') exportarSintesis();
+      if (d.accion==='exportarAsistenciaObligatoria') exportarAsistenciaObligatoria();
+     } catch (err) {
+       /* Red de seguridad: ningún clic queda en silencio, ni siquiera ante un
+          error inesperado que no se haya previsto. Siempre hay un aviso. */
+       try { avisar('Ocurrió un problema al procesar la acción: ' + err, true); }
+       catch (otro) { window.alert('Ocurrió un problema al procesar la acción: ' + err); }
+     }
+    };
+  });
+}
+
+/* ---------- bloqueos ---------- */
+function abrirCeldaLibre(fecha, franja){
+  abrirVentana('<h3>Horario libre</h3><p class="cuando-modal">'+legible(fecha)+' · '+franja+'</p>'
+    + '<p style="font-size:14px;color:var(--tinta-70);margin:0 0 4px">Seleccione la acción que corresponda.</p>'
+    + '<div class="acciones" style="justify-content:flex-start;margin-top:14px">'
+    + '<button class="btn" id="convocar">Convocar a un grupo</button>'
+    + (esAdmin() ? '<button class="btn fantasma" id="bloquear">Bloquear el horario</button>' : '')
+    + '</div>');
+  document.getElementById('convocar').onclick = () => abrirConvocatoria(fecha, franja);
+  const bl = document.getElementById('bloquear');
+  if (bl) bl.onclick = () => abrirBloqueo(fecha, franja);
+}
+
+function abrirConvocatoria(fecha, franja){
+  const opciones = estado.grupos.map(g => '<option value="'+escapar(g.nombre)+'">'+escapar(g.nombre)+'</option>').join('');
+  abrirVentana('<h3>Convocar a un grupo</h3><p class="cuando-modal">'+legible(fecha)+' · '+franja+'</p>'
+    + '<p style="font-size:13.5px;color:var(--tinta-70);margin:0 0 4px">La tutoría queda agendada con carácter obligatorio. El grupo no puede cancelarla.</p>'
+    + '<label for="vGrupo">Grupo de proyecto</label><select id="vGrupo">'+opciones+'</select>'
+    + '<label for="vCorreo">Enviar el aviso a</label><input id="vCorreo" type="email" placeholder="dirección de correo">'
+    + '<label for="vDetalle">Texto adicional (opcional)</label>'
+    + '<textarea id="vDetalle" placeholder="Motivo, materiales que deben presentar, docente que los recibe."></textarea>'
+    + '<div class="aviso" style="background:var(--papel);border-left-color:var(--tinta)"><strong>El correo va a decir:</strong><br>'
+    + 'Estimado grupo:<br><br>Se los convoca a una instancia de tutoría obligatoria el día '+legible(fecha)+', en el horario de '+franja+', dentro del horario de clase previsto.<br><br>'
+    + 'Se solicita la asistencia de todos los integrantes del grupo.<br><br><em>…seguido del texto adicional que incorpore.</em></div>'
+    + '<p class="error" id="errorConvocatoria" style="display:none"></p>'
+    + '<div class="acciones"><button class="btn fantasma" id="cerrar">Cancelar</button>'
+    + '<button class="btn" id="confirmar">Convocar y enviar aviso</button></div>');
+
+  const proponerCorreo = () => {
+    const g = document.getElementById('vGrupo').value;
+    const c = (correosDeGrupos.find(x => x.grupo === g) || {}).correo || '';
+    document.getElementById('vCorreo').value = c;
+  };
+  document.getElementById('vGrupo').onchange = proponerCorreo;
+  proponerCorreo();
+  document.getElementById('cerrar').onclick = cerrarVentana;
+  document.getElementById('confirmar').onclick = async e => {
+    e.target.disabled = true;
+    const r = await pedir({
+      accion:'convocar', fecha, franja,
+      grupo: document.getElementById('vGrupo').value,
+      correo: document.getElementById('vCorreo').value.trim(),
+      detalle: document.getElementById('vDetalle').value.trim()
+    });
+    if (!r.ok){ e.target.disabled=false; return mostrarError(document.getElementById('errorConvocatoria'), r.error); }
+    cerrarVentana();
+    if (r.avisoCorreo) avisar('Convocatoria agendada, pero el correo no salió. ' + r.avisoCorreo, true);
+    else avisar('Convocatoria agendada y aviso enviado.');
+    await cargar();
+  };
+}
+
+function abrirBloqueo(fecha, franja){
+  abrirVentana('<h3>Bloquear franja</h3><p class="cuando-modal">'+legible(fecha)+' · '+franja+'</p>'
+    + (estado.reservas.some(x => x.fecha === fecha && x.franja === franja)
+        ? '<div class="aviso">Este horario tiene una tutoría reservada. Al bloquearlo, el panel le indicará cuál se cancela antes de aplicar el cambio.</div>'
+        : '')
+    + '<label for="motivo">Motivo (visible para los estudiantes)</label>'
+    + '<input id="motivo" placeholder="Asamblea Técnico Docente, feriado, sala docente…">'
+    + '<label style="display:flex;gap:8px;align-items:center;margin-top:14px"><input type="checkbox" id="todoElDia" style="width:auto"> Bloquear el día completo</label>'
+    + '<p class="error" id="errorBloqueo" style="display:none"></p>'
+    + '<div class="acciones"><button class="btn fantasma" id="cerrar">Cancelar</button><button class="btn" id="confirmar">Bloquear</button></div>');
+
+  document.getElementById('cerrar').onclick = cerrarVentana;
+  document.getElementById('confirmar').onclick = e => aplicarBloqueo(e, {
+    fechas:[fecha],
+    franja: document.getElementById('todoElDia').checked ? 'TODO' : franja,
+    motivo: document.getElementById('motivo').value.trim()
+  });
+}
+
+function abrirBloqueoRango(){
+  const f = fechasDeSemana(semanaActual);
+  abrirVentana('<h3>Bloquear jornadas</h3><p class="cuando-modal">Actividad institucional, feriado o suspensión</p>'
+    + '<div class="dos"><div><label for="desde">Desde</label><input id="desde" type="date" value="'+f[0]+'"></div>'
+    + '<div><label for="hasta">Hasta</label><input id="hasta" type="date" value="'+f[0]+'"></div></div>'
+    + '<label for="motivo">Motivo</label><input id="motivo" placeholder="Asamblea Técnico Docente, feriado…">'
+    + '<p class="ayuda">Se bloquean íntegramente los días hábiles comprendidos en el rango.</p>'
+    + '<p class="error" id="errorBloqueo" style="display:none"></p>'
+    + '<div class="acciones"><button class="btn fantasma" id="cerrar">Cancelar</button><button class="btn" id="confirmar">Bloquear</button></div>');
+
+  document.getElementById('cerrar').onclick = cerrarVentana;
+  document.getElementById('confirmar').onclick = e => {
+    const desde = aFecha(document.getElementById('desde').value);
+    const hasta = aFecha(document.getElementById('hasta').value);
+    const fechas = [];
+    for (let d = new Date(desde); d <= hasta; d.setDate(d.getDate()+1)){
+      if (d.getDay()>=1 && d.getDay()<=5) fechas.push(aTexto(d));
+    }
+    if (!fechas.length) return mostrarError(document.getElementById('errorBloqueo'),'El rango no comprende días hábiles.');
+    aplicarBloqueo(e, { fechas, franja:'TODO', motivo: document.getElementById('motivo').value.trim() });
+  };
+}
+
+async function aplicarBloqueo(evento, datos, confirmado){
+  evento.target.disabled = true;
+  const r = await pedir(Object.assign({ accion:'bloquear', confirmado: !!confirmado }, datos));
+
+  if (r.requiereConfirmacion){
+    const lista = r.afectadas.map(a=>'<li>'+escapar(a.grupo)+' — '+legible(a.fecha)+', '+a.franja+'</li>').join('');
+    abrirVentana('<h3>Hay tutorías reservadas</h3>'
+      + '<p class="cuando-modal">Se cancelarán al aplicar el bloqueo</p>'
+      + '<ul style="font-size:13.5px;padding-left:18px;margin:0">'+lista+'</ul>'
+      + '<div class="aviso">Se remitirá aviso por correo al grupo de clase, en caso de haber una dirección configurada.</div>'
+      + '<div class="acciones"><button class="btn fantasma" id="cerrar">Volver</button>'
+      + '<button class="btn peligro" id="confirmar">Cancelar '+r.afectadas.length+' y bloquear</button></div>');
+    document.getElementById('cerrar').onclick = cerrarVentana;
+    document.getElementById('confirmar').onclick = e2 => aplicarBloqueo(e2, datos, true);
+    return;
+  }
+  if (!r.ok){
+    evento.target.disabled = false;
+    const e = document.getElementById('errorBloqueo');
+    if (e) mostrarError(e, r.error); else alert(r.error);
+    return;
+  }
+  cerrarVentana();
+  if (r.avisoCorreo) avisar('Bloqueo aplicado, pero el correo no salió. ' + r.avisoCorreo, true);
+  else avisar(r.canceladas ? 'Bloqueo aplicado. Se cancelaron ' + r.canceladas + ' tutoría(s) y se avisó por correo.' : 'Bloqueo aplicado.');
+  await cargar();
+}
+
+function abrirDesbloqueo(id, fecha, franja){
+  const b = estado.bloqueos.find(x=>x.id===id);
+  abrirVentana('<h3>Quitar bloqueo</h3><p class="cuando-modal">'+legible(fecha)+' · '+(b && b.franja==='TODO'?'día completo':franja)+'</p>'
+    + '<p style="font-size:14px">Motivo actual: <strong>'+escapar(b?b.motivo:'')+'</strong></p>'
+    + '<div class="acciones"><button class="btn fantasma" id="cerrar">Volver</button><button class="btn" id="confirmar">Liberar</button></div>');
+  document.getElementById('cerrar').onclick = cerrarVentana;
+  document.getElementById('confirmar').onclick = async e => {
+    e.target.disabled = true;
+    const r = await pedir({ accion:'desbloquear', id });
+    if (!r.ok){ e.target.disabled=false; return avisar(r.error, true); }
+    cerrarVentana(); avisar('Horario liberado.'); await cargar();
+  };
+}
+
+/* ---------- reserva / asistencia ---------- */
+function abrirReserva(id){
+  const r = estado.reservas.find(x=>x.id===id);
+  if (!r) return;
+
+  abrirVentana('<h3>'+escapar(r.grupo)+'</h3><p class="cuando-modal">'+legible(r.fecha)+' · '+r.franja+'</p>'
+    + (r.tema ? '<p style="font-size:14px"><strong>Tema:</strong> '+escapar(r.tema)+'</p>':'')
+    + (r.integrantes ? '<p style="font-size:14px"><strong>Asisten:</strong> '+escapar(r.integrantes)+'</p>':'')
+    + '<div class="aviso" style="background:var(--papel);border-left-color:var(--tinta)">La asistencia y las observaciones se registran desde la pestaña Asistencia.</div>'
+    + '<div class="acciones">'
+    + '<button class="btn fantasma" id="cerrar">Cerrar</button>'
+    + (esAdmin() ? '<button class="btn fantasma" id="bloquearOcupado">Bloquear el horario</button>'
+                 + '<button class="btn peligro" id="cancelarDocente">Cancelar tutoría</button>' : '')
+    + '</div>');
+
+  document.getElementById('cerrar').onclick = cerrarVentana;
+
+  const cd = document.getElementById('cancelarDocente');
+  if (cd) cd.onclick = () => abrirCancelacionDocente(id);
+  const bo = document.getElementById('bloquearOcupado');
+  if (bo) bo.onclick = () => abrirBloqueo(r.fecha, r.franja);
+}
+
+function abrirCancelacionDocente(id){
+  const r = estado.reservas.find(x => x.id === id);
+  if (!r) return;
+  const futura = !yaPaso(r.fecha, r.franja);
+
+  abrirVentana('<h3>Cancelar tutoría</h3>'
+    + '<p class="cuando-modal">'+escapar(r.grupo)+' · '+legible(r.fecha)+' · '+r.franja+'</p>'
+    + (futura
+        ? '<label for="motivoCancelacion">Motivo (opcional)</label>'
+          + '<input id="motivoCancelacion" placeholder="Se incluye en el aviso al grupo">'
+          + '<div class="aviso">Se remitirá un correo al grupo con las disculpas correspondientes, invitándolo a reservar otro horario.</div>'
+        : '<div class="aviso">La tutoría ya se dictó. No se enviará aviso: se trata de una corrección de registro.</div>')
+    + '<div class="acciones"><button class="btn fantasma" id="cerrar">Volver</button>'
+    + '<button class="btn peligro" id="confirmar">Cancelar tutoría</button></div>');
+
+  document.getElementById('cerrar').onclick = cerrarVentana;
+  document.getElementById('confirmar').onclick = async e => {
+    e.target.disabled = true;
+    const campo = document.getElementById('motivoCancelacion');
+    const resp = await pedir({ accion:'cancelarDocente', id, motivo: campo ? campo.value.trim() : '' });
+    if (!resp.ok){ e.target.disabled=false; return avisar(resp.error, true); }
+    cerrarVentana();
+    if (resp.avisoCorreo) avisar('Tutoría cancelada, pero el correo no salió. ' + resp.avisoCorreo, true);
+    else avisar(futura ? 'Tutoría cancelada y aviso enviado.' : 'Tutoría cancelada.');
+    await cargar();
+  };
+}
+
+async function reiniciarCodigo(grupo){
+  if (!confirm('¿Confirma el reinicio del código de '+grupo+'? El grupo deberá definir uno nuevo al ingresar.')) return;
+  const r = await pedir({ accion:'reiniciarCodigo', grupo });
+  if (!r.ok) return avisar(r.error, true);
+  avisar('Código reiniciado. El grupo definirá uno nuevo al ingresar.');
+  await cargar();
+}
+
+/* ---------- exportación ---------- */
+function descargar(nombre, filas){
+  const csv = filas.map(f => f.map(c => '"'+String(c==null?'':c).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const enlace = document.createElement('a');
+  enlace.href = URL.createObjectURL(new Blob(['\ufeff'+csv], { type:'text/csv;charset=utf-8' }));
+  enlace.download = nombre;
+  enlace.click();
+}
+
+function exportarReservas(){
+  const filas = [['Fecha','Horario','Grupo','Origen','Tema','Integrantes','Estado','Observaciones']];
+  estado.reservas
+    .slice().sort((a,b)=>a.fecha.localeCompare(b.fecha)||a.franja.localeCompare(b.franja))
+    .forEach(r => filas.push([r.fecha, r.franja, r.grupo, r.convocatoria ? 'Convocatoria' : 'Reserva del grupo',
+                              r.tema, r.integrantes, etiquetaEstado(r.estado), r.notas]));
+  descargar('tutorias-'+estado.config.grupoClase+'-'+aTexto(new Date())+'.csv', filas);
+}
+
+function exportarAsistenciaObligatoria(){
+  const filas = [['Grupo','Fecha','Estado','Observaciones']];
+  (estado.asistencias || []).slice().sort((a,b) => a.fecha.localeCompare(b.fecha))
+    .forEach(x => filas.push([x.grupo, x.fecha, x.estado === 'presente' ? 'Presente' : 'Ausente', x.notas]));
+  descargar('tutorias-obligatorias-'+estado.config.grupoClase+'-'+aTexto(new Date())+'.csv', filas);
+}
+
+function exportarSintesis(){
+  const total = totalReservas();
+  const filas = [['Grupo','Tutorías reservadas','Asistió','Inasistencias','Horas','Convocatorias','Semanas con más de una reserva','Porcentaje del total','Jornadas obligatorias exigidas','Presentes','Faltas','Sin registrar']];
+  resumenPorGrupo().forEach(f => filas.push([
+    f.grupo.nombre, f.reservadas, f.asistidas, f.ausencias, f.horas.toFixed(1), f.convocatorias,
+    f.semanasConMasDeUna, total ? Math.round(f.reservadas*100/total)+'%' : '',
+    f.esperadas || '', f.esperadas ? f.presentes : '', f.esperadas ? f.faltas : '', f.esperadas ? f.sinRegistrar : ''
+  ]));
+  descargar('sintesis-'+estado.config.grupoClase+'-'+aTexto(new Date())+'.csv', filas);
+}
+
+/* ---------- ventanas ---------- */
+function abrirVentana(html){
+  document.getElementById('ventana').innerHTML = html;
+  document.getElementById('telon').classList.add('visible');
+}
+function cerrarVentana(){ document.getElementById('telon').classList.remove('visible'); }
+document.getElementById('telon').onclick = e => { if (e.target.id==='telon') cerrarVentana(); };
+document.addEventListener('keydown', e => { if (e.key==='Escape') cerrarVentana(); });
+function mostrarError(el, texto){ if (!el) return; el.textContent = texto||'Ocurrió un error.'; el.style.display=''; }
+
+let temporizadorAviso = null;
+/* Confirmación visible de cada acción del panel. */
+function avisar(texto, malo){
+  const n = document.getElementById('notificacion');
+  if (!n){
+    // Si el cartel no existe en la página, el mensaje sale igual: nada que el
+    // sistema tenga para decir puede quedar sin llegar.
+    window.alert(texto);
+    return;
+  }
+  n.textContent = texto;
+  n.className = 'notificacion visible' + (malo ? ' malo' : '');
+  clearTimeout(temporizadorAviso);
+  temporizadorAviso = setTimeout(()=>{ n.className = 'notificacion'; }, 4000);
+}
+
+if (ENLACE_DOCENTE) iniciarDocente();
+else if (clave) iniciar();
+
+/* El docente entra directo: su enlace es la credencial. */
+async function iniciarDocente(){
+  const r = await pedir({ accion:'ingresarPanel' });
+  if (!r.ok){
+    document.getElementById('pantallaAcceso').innerHTML =
+      '<p class="eyebrow">Panel docente</p><h1>Enlace no válido</h1>'
+      + '<p class="ayuda">Este enlace ya no está habilitado. Solicite uno nuevo a la coordinación.</p>';
+    return;
+  }
+  rol = r.rol; nombreActor = r.nombre;
+  await iniciar();
+}
+
+/* Refresco automático mientras se mira la agenda, la asistencia o la síntesis.
+   No se refresca sobre la configuración ni con una ventana abierta, para no
+   borrar lo que se esté escribiendo. */
+setInterval(() => {
+  if (!estado) return;
+  if (document.getElementById('telon').classList.contains('visible')) return;
+  if (['agenda','asistencia','sintesis'].indexOf(vistaActual) === -1) return;
+  cargar();
+}, 60000);
+</script>
+</body>
+</html>
